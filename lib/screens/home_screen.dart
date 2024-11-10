@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../constants.dart';
 import '../models/article_model.dart';
-import '../services/api_service.dart';
+import '../services/article_api_service.dart';
+import '../services/claude_api_service.dart';
 import '../widgets/article_tile.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -49,4 +50,100 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+  // final TextEditingController _messageController = TextEditingController();
+  // final ClaudeApiService _claudeService = ClaudeApiService(
+  //   apiKey: Claude_APIKEY,
+  // );
+  // List<Map<String, String>> messages = [];
+  // bool isLoading = false;
+  //
+  // Future<void> _sendMessage() async {
+  //   if (_messageController.text.isEmpty) return;
+  //
+  //   setState(() {
+  //     messages.add({
+  //       'role': 'user',
+  //       'content': _messageController.text,
+  //     });
+  //     isLoading = true;
+  //   });
+  //
+  //   try {
+  //     final response = await _claudeService.sendMessage(
+  //       content: _messageController.text, //todo: change prompt
+  //     );
+  //
+  //     setState(() {
+  //       messages.add({
+  //         'role': 'assistant',
+  //         'content': response['content'][0]['text'],
+  //       });
+  //       isLoading = false;
+  //     });
+  //
+  //     _messageController.clear();
+  //   } catch (e) {
+  //     setState(() {
+  //       isLoading = false;
+  //     });
+  //     print("error");
+  //     print(e);
+  //     print("error");
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('Error: $e')),
+  //     );
+  //   }
+  // }
+  //
+  // @override
+  // Widget build(BuildContext context) {
+  //   return Scaffold(
+  //     appBar: AppBar(title: const Text('Chat with Claude')),
+  //     body: Column(
+  //       children: [
+  //         Expanded(
+  //           child: ListView.builder(
+  //             itemCount: messages.length,
+  //             itemBuilder: (context, index) {
+  //               final message = messages[index];
+  //               return ListTile(
+  //                 title: Text(message['content'] ?? ''),
+  //                 leading: Icon(
+  //                   message['role'] == 'user'
+  //                       ? Icons.person
+  //                       : Icons.smart_toy,
+  //                 ),
+  //               );
+  //             },
+  //           ),
+  //         ),
+  //         if (isLoading)
+  //           const Padding(
+  //             padding: EdgeInsets.all(8.0),
+  //             child: CircularProgressIndicator(),
+  //           ),
+  //         Padding(
+  //           padding: const EdgeInsets.all(8.0),
+  //           child: Row(
+  //             children: [
+  //               Expanded(
+  //                 child: TextField(
+  //                   controller: _messageController,
+  //                   decoration: const InputDecoration(
+  //                     hintText: 'Type a message...',
+  //                     border: OutlineInputBorder(),
+  //                   ),
+  //                 ),
+  //               ),
+  //               IconButton(
+  //                 icon: const Icon(Icons.send),
+  //                 onPressed: _sendMessage,
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 }
