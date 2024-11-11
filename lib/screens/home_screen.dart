@@ -4,6 +4,7 @@ import '../models/article_model.dart';
 import '../services/article_api_service.dart';
 import '../services/claude_api_service.dart';
 import '../widgets/article_tile.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -52,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
   // final TextEditingController _messageController = TextEditingController();
   // final ClaudeApiService _claudeService = ClaudeApiService(
-  //   apiKey: Claude_APIKEY,
+  //   apiKey: dotenv.env['CLAUDE_API_KEY'] ?? " ", //todo: ??
   // );
   // List<Map<String, String>> messages = [];
   // bool isLoading = false;

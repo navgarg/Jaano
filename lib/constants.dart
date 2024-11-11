@@ -11,7 +11,7 @@ class KColors {
 const String API_KEY = "4ec0bca1845443259827bcee48f9f1fe";
 // const String baseUrl = "newsapi.org";
 const String Claude_baseUrl = 'https://api.anthropic.com/v1/messages';
-const String Claude_APIKEY = "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";
+// const String Claude_APIKEY = "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";
 // const String newsUrl = "/v2/top-headlines";
 const String baseUrl = "raw.githubusercontent.com";
 const String newsUrl = "/navgarg/Loose-Files/master/jaano_newsdata.json";
