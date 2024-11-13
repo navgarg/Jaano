@@ -1,3 +1,9 @@
+import 'dart:convert';
+
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+import '../services/claude_api_service.dart';
+
 class Source{
   String name;
   String? id;
@@ -28,7 +34,6 @@ enum Categories {domestic, education, entertainment, environment, food,
 enum Status {complete, incomplete}
 
 class Article {
-  //todo: properly get question data from claude and update.
   //record activity of user in every session
   List<Question>? questions;
   Source source;
@@ -54,27 +59,58 @@ class Article {
         required this.publishedAt,
         required this.content});
 
-  factory Article.fromJson(Map<String, dynamic> json) {
-    List<Categories> cats = Categories.values;
+  ///this method is only called if data for the day is not already present in firebase.
+  static Future<Article> fromJson(Map<String, dynamic> json) async {
     Categories cat;
-    if (cats.contains(json['category'])){
+    try{
       cat = Categories.values.firstWhere((e) => e.toString() == 'Categories.' + json['category']);
     }
-    else{
+    catch (e) {
       cat = Categories.other;
     }
-    return Article(
-      source: Source.fromJson(json['source']),
-      author: json['author'],
-      title: json['title'],
-      description: json['description'],
-      url: json['url'],
-      urlToImage: json['urlToImage'],
-      publishedAt: json['publishedAt'],
-      content: json['content'],
-      status: Status.incomplete,
-      questions: [],
-      category: cat, //todo: update wrt new json data
-    );
+
+    DateTime dt = DateTime.parse(json['publishedAt']);
+    DateTime dateTime = DateTime(2023, 8, 30, 00, 00, 00);
+    String? resp;
+    if (dt.isBefore(dateTime)) {
+      String resp = await getClaudeSummary(json['url'] as String);
+      print("run");
+    }
+
+      return Article(
+        source: Source.fromJson(json['source']),
+        author: json['author'],
+        title: json['title'],
+        description: json['description'],
+        url: json['url'],
+        urlToImage: json['urlToImage'],
+        publishedAt: json['publishedAt'],
+        content: resp ?? json['content'],
+        status: Status.incomplete,
+        questions: [],
+        category: cat, //todo: update wrt new json data
+      );
+    }
   }
+
+Future<String> getClaudeSummary (String link) async {
+  final ClaudeApiService claudeService = ClaudeApiService(
+    apiKey: dotenv.env['CLAUDE_API_KEY'] ?? " ",
+  );
+
+  try {
+    final response = await claudeService.sendMessage(
+      content: "Summarize the news article given at the link: $link for a child in age group of 6-10 years. Use easy to understand language and short sentences. Do not go over 6-7 lines.", //todo: change prompt
+    );
+    print(response);
+    print(response['content']);
+    String cont = response['content'][0]['text'].toString();
+    return cont;
+
+  } catch (e) {
+    print("error in model");
+    print(e);
+    print("error");
+  }
+  return "error";
 }

@@ -21,7 +21,8 @@ class ApiService {
     List<dynamic> body = json['articles'];
 
     ///retrieve and store articles in list of type article.
-    List<Article> articles = List<Article>.from(body.map((e) => Article.fromJson(e)).toList());
+    // List<Article> articles = List<Article>.from(body.map((e) async => await Article.fromJson(e)).toList());
+    List<Article> articles = await Future.wait(body.map((e) async => Article.fromJson(e)).toList());
     return articles;
   }
 }

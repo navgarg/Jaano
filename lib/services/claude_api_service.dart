@@ -30,7 +30,7 @@ class ClaudeApiService {
           }
         ],
         'temperature': temperature,
-        if (maxTokens != null) 'max_tokens': maxTokens,
+        'max_tokens': maxTokens ?? 500,
       };
 
       final response = await http.post(
@@ -48,4 +48,5 @@ class ClaudeApiService {
       throw Exception('Error sending message: $e');
     }
   }
+
 }
