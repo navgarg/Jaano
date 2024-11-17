@@ -69,15 +69,10 @@ class Article {
       cat = Categories.other;
     }
 
-    DateTime dt = DateTime.parse(json['publishedAt']);
-    DateTime dateTime = DateTime(2023, 8, 30, 00, 00, 00);
-    String? resp;
-    if (dt.isBefore(dateTime)) {
-      String resp = await getClaudeSummary(json['url'] as String);
-      print("run");
-    }
+    String? resp = await getClaudeSummary(json['url'] as String);
+    print("run");
 
-      return Article(
+    return Article(
         source: Source.fromJson(json['source']),
         author: json['author'],
         title: json['title'],
@@ -85,7 +80,7 @@ class Article {
         url: json['url'],
         urlToImage: json['urlToImage'],
         publishedAt: json['publishedAt'],
-        content: resp ?? json['content'],
+        content: resp,
         status: Status.incomplete,
         questions: [],
         category: cat, //todo: update wrt new json data
@@ -100,7 +95,7 @@ Future<String> getClaudeSummary (String link) async {
 
   try {
     final response = await claudeService.sendMessage(
-      content: "Summarize the news article given at the link: $link for a child in age group of 6-10 years. Use easy to understand language and short sentences. Do not go over 6-7 lines.", //todo: change prompt
+      content: "Summarize the news article given at the link: $link for a child in age group of 6-10 years. Use easy to understand language and short sentences. Make it engaging and interesting, while keeping all main points intact. Do not go over 4-5 lines. Do not include introductory line at the start.", //todo: change prompt
     );
     print(response);
     print(response['content']);
@@ -114,3 +109,6 @@ Future<String> getClaudeSummary (String link) async {
   }
   return "error";
 }
+
+//voice interaction with claude
+//database

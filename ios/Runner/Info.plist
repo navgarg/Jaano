@@ -27,6 +27,9 @@
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
+	<string>Permission required to record audio for speech recognition</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<key>NSMicrophoneUsageDescription</key>
 	<string>Main</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>

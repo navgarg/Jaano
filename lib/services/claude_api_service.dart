@@ -10,7 +10,8 @@ class ClaudeApiService {
 
   Future<Map<String, dynamic>> sendMessage({
     required String content,
-    String model = 'claude-3-opus-20240229',
+    String model="claude-3-sonnet-20240229",
+    // String model = 'claude-3-opus-20240229',
     double temperature = 1.0, //controls randomness of responses
     int? maxTokens,
   }) async {
@@ -31,6 +32,7 @@ class ClaudeApiService {
         ],
         'temperature': temperature,
         'max_tokens': maxTokens ?? 500,
+        'system':"You are a helpful assistant that specializes in explaining news to children."
       };
 
       final response = await http.post(

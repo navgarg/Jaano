@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jaano/widgets/QuizDialog.dart';
 import '../constants.dart';
 import '../models/article_model.dart';
 import '../services/article_api_service.dart';
@@ -94,7 +95,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 alignment: Alignment.bottomRight,
                                 child: TextButton(
                                   onPressed: () { //todo: update by getting question data from LLM.
-                                    showQuizDialog(context, "Quiz", article.content ?? "");
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) => QuizDialog(title: "Quiz", content: article.content ?? "")
+                                    );
                                   },
                                   child: Text("Start Quiz"),
                                 ),
@@ -115,49 +119,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
-void showQuizDialog(BuildContext context, String title, String content) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        child: Container(
-          padding: const EdgeInsets.all(16.0),
-          constraints: const BoxConstraints(maxHeight: 400), // Adjust height as needed
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Text(
-                    content,
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog
-                  },
-                  child: const Text("Submit"),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    },
-  );
-}
-

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "990473126637",
+    "project_id": "jaano-1327f",
+    "storage_bucket": "jaano-1327f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:990473126637:android:a26ab28b8b40401249c2e4",
+        "android_client_info": {
+          "package_name": "com.example.jaano"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClD0onRwNj6aCrDyO70zFp7k9AsBy7p3o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:990473126637:android:9e7818bf1e2ae61f49c2e4",
+        "android_client_info": {
+          "package_name": "com.kidsapp.jaano"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClD0onRwNj6aCrDyO70zFp7k9AsBy7p3o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
