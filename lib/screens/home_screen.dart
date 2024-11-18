@@ -97,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   onPressed: () { //todo: update by getting question data from LLM.
                                     showDialog(
                                         context: context,
-                                        builder: (context) => QuizDialog(title: "Quiz", content: article.content ?? "")
+                                        builder: (context) => QuizDialog(article: article)
                                     );
                                   },
                                   child: Text("Start Quiz"),

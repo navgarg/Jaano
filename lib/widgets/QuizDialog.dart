@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:jaano/constants.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
+import '../models/article_model.dart';
+
 class QuizDialog extends StatefulWidget {
-  final String title;
-  final String content;
+  final Article article;
   const QuizDialog({
     super.key,
-    required this.title,
-    required this.content,
+    required this.article,
   });
 
   @override
@@ -41,6 +41,15 @@ class _QuizDialogState extends State<QuizDialog> {
 
   void _stopListening() async {
     await _speechToText.stop();
+    print("words:");
+    print(_wordsSpoken);
+    if (_wordsSpoken == widget.article.questions![0].answer) {
+      print("correct");
+    }
+    else{
+
+      print("wrong");
+    }
     setState(() {
 
     });
@@ -59,95 +68,92 @@ class _QuizDialogState extends State<QuizDialog> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
-      child: FractionallySizedBox(
-        widthFactor: 0.95,
-        heightFactor: 0.7, // Adjustable height
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Title
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                widget.title,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-            const SizedBox(height: 10),
-            // Content
-            Flexible(
-              flex: 7,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: SingleChildScrollView(
-                  child: Text(
-                    widget.content,
-                    style: const TextStyle(fontSize: 16),
-                    textAlign: TextAlign.justify,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.9, // Limit max height
+          maxWidth: MediaQuery.of(context).size.width * 0.9,   // Limit max width
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Title
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  "Quiz",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
+                  textAlign: TextAlign.center,
                 ),
               ),
-            ),
-            const SizedBox(height: 10),
-            // Speech Status
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                _speechToText.isListening
-                    ? "Listening..."
-                    : _speechEnabled
-                    ? "Tap button to answer"
-                    : "Speech not available",
-                style: const TextStyle(
-                  color: Colors.black54,
-                  fontSize: 16.0,
+              const SizedBox(height: 10),
+              // Content
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text(
+                  widget.article.questions?[0].question.toString() ?? " ", // todo: show both questions
+                  style: const TextStyle(fontSize: 16),
+                  textAlign: TextAlign.justify,
                 ),
-                textAlign: TextAlign.center,
               ),
-            ),
-            const SizedBox(height: 10),
-            // Words Spoken
-            Flexible(
-              flex: 3,
-              child: Padding(
+              const SizedBox(height: 10),
+              // Speech Status
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text(
+                  _speechToText.isListening
+                      ? "Listening..."
+                      : _speechEnabled
+                      ? "Tap button to answer"
+                      : "Speech not available",
+                  style: const TextStyle(
+                    color: Colors.black54,
+                    fontSize: 16.0,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const SizedBox(height: 10),
+              // Words Spoken
+              Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: SingleChildScrollView(
                   child: Text(
                     _wordsSpoken,
                     style: const TextStyle(
-                        fontSize: 16,
-                        fontStyle: FontStyle.italic,
+                      fontSize: 16,
+                      fontStyle: FontStyle.italic,
                     ),
                     textAlign: TextAlign.justify,
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 10),
-            // Button
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16.0, right: 16.0),
-              child: Align(
-                alignment: Alignment.bottomRight,
-                child: TextButton(
-                  onPressed: () {
-                    _speechToText.isListening
-                        ? _stopListening()
-                        : _startListening();
-                  },
-                  child: Text(
-                    _speechToText.isListening ? "Stop Listening" : "Start Listening",
+              const SizedBox(height: 10),
+              // Button
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0, right: 16.0),
+                child: Align(
+                  alignment: Alignment.bottomRight,
+                  child: TextButton(
+                    onPressed: () {
+                      _speechToText.isListening
+                          ? _stopListening()
+                          : _startListening();
+                    },
+                    child: Text(
+                      _speechToText.isListening ? "Stop Listening" : "Start Listening",
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
+
 }

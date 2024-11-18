@@ -18,7 +18,6 @@ class Question{
   String question;
   String? answer;
 
-  //todo: use claude to get question and send response to check ans.
   Question({required this.question, required this.answer});
 
   factory Question.fromJson(Map<String, dynamic> json){
@@ -70,6 +69,8 @@ class Article {
     }
 
     String? resp = await getClaudeSummary(json['url'] as String);
+    List<Question> quests = await getClaudeQuestions(resp);
+    print(quests);
     print("run");
 
     return Article(
@@ -82,7 +83,7 @@ class Article {
         publishedAt: json['publishedAt'],
         content: resp,
         status: Status.incomplete,
-        questions: [],
+        questions: quests,
         category: cat, //todo: update wrt new json data
       );
     }
@@ -103,11 +104,64 @@ Future<String> getClaudeSummary (String link) async {
     return cont;
 
   } catch (e) {
-    print("error in model");
+    print("error while getting summary");
     print(e);
     print("error");
   }
   return "error";
+}
+//todo:
+
+Future<List<Question>> getClaudeQuestions(String content) async {
+  final ClaudeApiService claudeService = ClaudeApiService(
+    apiKey: dotenv.env['CLAUDE_API_KEY'] ?? " ",
+  );
+
+  try {
+    final response = await claudeService.sendMessage(
+      content: "Here is the summary of a news article meant for a child in age group of 6-10 years: $content Prepare two factual questions based on this summary. Include the answers to the questions too. Clearly demarcate every question and answer.",
+    );
+
+    print("Response: $response");
+
+    // Extract raw content from Claude's response
+    String rawContent = response['content'][0]['text'].toString();
+
+    // Split into non-empty lines
+    List<String> lines = rawContent.split('\n').where((line) => line.trim().isNotEmpty).toList();
+    print("Lines: $lines");
+
+    // Extract questions
+    List<String> questions = lines
+        .where((line) => line.startsWith('Question 1:') || line.startsWith('Question 2:'))
+        .map((line) => line.substring(line.indexOf(':') + 1).trim()) // Remove "Question X: "
+        .toList();
+    print("Questions: $questions");
+
+    // Extract answers
+    List<String> answers = lines
+        .where((line) => line.startsWith('Answer:'))
+        .map((line) => line.substring(line.indexOf(':') + 1).trim()) // Remove "Answer: "
+        .toList();
+    print("Answers: $answers");
+
+    // Validate lengths
+    if (questions.length != 2 || answers.length != 2) {
+      throw Exception("Unexpected format: Could not find exactly two questions and answers.");
+    }
+
+    // Create a list of Question objects
+    List<Question> questionList = [
+      Question(question: questions[0], answer: answers[0]),
+      Question(question: questions[1], answer: answers[1]),
+    ];
+    print("Parsed Questions: $questionList");
+
+    return questionList;
+  } catch (e) {
+    print("Error while fetching questions: $e");
+    return [];
+  }
 }
 
 //voice interaction with claude
