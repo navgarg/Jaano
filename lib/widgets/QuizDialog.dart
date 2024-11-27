@@ -33,7 +33,11 @@ class _QuizDialogState extends State<QuizDialog> {
   }
 
   void _startListening() async {
-    await _speechToText.listen(onResult: _onSpeechResult);
+    await _speechToText.listen(
+        onResult: _onSpeechResult,
+        pauseFor: const Duration(seconds: 20),
+        listenOptions: SpeechListenOptions(listenMode: ListenMode.dictation),
+    );
     setState(() {
 
     });

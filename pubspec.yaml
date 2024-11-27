@@ -34,11 +34,13 @@ dependencies:
   flutter_dotenv: ^5.2.1
   speech_to_text: ^7.0.0
   firebase_core: ^3.8.0
-
-
+  carousel_slider: ^5.0.0
+  cloud_firestore: ^5.5.0
+  intl: ^0.19.0
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  flutter_tts: ^4.2.0
 
 dev_dependencies:
   flutter_test:
@@ -69,6 +71,13 @@ flutter:
   assets:
     - assets/circuit.png
     - .env
+    - assets/economy.png
+    - assets/environment.png
+    - assets/food.png
+    - assets/science.png
+    - assets/sports.png
+    - assets/tech.png
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

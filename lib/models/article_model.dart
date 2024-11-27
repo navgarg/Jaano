@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../services/claude_api_service.dart';
@@ -10,6 +11,19 @@ class Source{
 
   Source({required this.id, required this.name});
 
+  factory Source.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+
+    return Source(id: data['id'] ?? "", name: data['name'] ?? "");
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'id': id,
+    };
+  }
+
   factory Source.fromJson(Map<String, dynamic> json){
     return Source(id: json["id"], name: json["name"]);
   }
@@ -19,6 +33,19 @@ class Question{
   String? answer;
 
   Question({required this.question, required this.answer});
+
+  factory Question.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+
+    return Question(question: data['question'] ?? "", answer: data['answer'] ?? "");
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'question': question,
+      'answer': answer,
+    };
+  }
 
   factory Question.fromJson(Map<String, dynamic> json){
     return Question(question: json["question"], answer: json["answer"]);
@@ -38,7 +65,7 @@ class Article {
   Source source;
   String? author;
   Categories category;
-  Status status;
+  // Status status;
   String title;
   String? description;
   String? url;
@@ -51,14 +78,52 @@ class Article {
         required this.questions,
         required this.title,
         required this.category,
-        required this.status,
+        // required this.status,
         required this.description,
         required this.url,
         required this.urlToImage,
         required this.publishedAt,
         required this.content});
 
-  ///this method is only called if data for the day is not already present in firebase.
+  factory Article.fromFirestore (DocumentSnapshot<Map<String, dynamic>> art, Source source, List<Question> questions){
+    final data = art.data()!;
+    Categories cat;
+    try{
+      cat = Categories.values.firstWhere((e) => e.toString() == 'Categories.' + data['category']);
+    }
+    catch (e) {
+      cat = Categories.other;
+    }
+
+    return Article (
+        source: source,
+        author: data['author'] ?? "",
+        questions: questions,
+        title: data['title'] ?? "",
+        category: cat,
+        // status:,
+        description: data['description'] ?? "",
+        url: data['url'] ?? "",
+        urlToImage: data['urlToImage'] ?? "",
+        publishedAt: data['publishedAt'] ?? "",
+        content: data['content'] ?? "");
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'title': title,
+      'content': content,
+      'author': author,
+      'category': category.toString(),
+      'description': description,
+      'url': url,
+      'urlToImage': urlToImage,
+      'publishedAt': publishedAt,
+    };
+  }
+
+
+    ///this method is only called if data for the day is not already present in firebase.
   static Future<Article> fromJson(Map<String, dynamic> json) async {
     Categories cat;
     try{
@@ -82,7 +147,7 @@ class Article {
         urlToImage: json['urlToImage'],
         publishedAt: json['publishedAt'],
         content: resp,
-        status: Status.incomplete,
+        // status: Status.incomplete,
         questions: quests,
         category: cat, //todo: update wrt new json data
       );
@@ -110,7 +175,6 @@ Future<String> getClaudeSummary (String link) async {
   }
   return "error";
 }
-//todo:
 
 Future<List<Question>> getClaudeQuestions(String content) async {
   final ClaudeApiService claudeService = ClaudeApiService(
@@ -119,7 +183,7 @@ Future<List<Question>> getClaudeQuestions(String content) async {
 
   try {
     final response = await claudeService.sendMessage(
-      content: "Here is the summary of a news article meant for a child in age group of 6-10 years: $content Prepare two factual questions based on this summary. Include the answers to the questions too. Clearly demarcate every question and answer.",
+      content: "Here is the summary of a news article meant for a child in age group of 6-10 years: $content Prepare two factual questions based on this summary. Include the answers to the questions too. Clearly demarcate every question and answer clearly.",
     );
 
     print("Response: $response");
@@ -133,14 +197,14 @@ Future<List<Question>> getClaudeQuestions(String content) async {
 
     // Extract questions
     List<String> questions = lines
-        .where((line) => line.startsWith('Question 1:') || line.startsWith('Question 2:'))
+        .where((line) => line.startsWith('Question') || line.startsWith('Question'))
         .map((line) => line.substring(line.indexOf(':') + 1).trim()) // Remove "Question X: "
         .toList();
     print("Questions: $questions");
 
     // Extract answers
     List<String> answers = lines
-        .where((line) => line.startsWith('Answer:'))
+        .where((line) => line.startsWith('Answer'))
         .map((line) => line.substring(line.indexOf(':') + 1).trim()) // Remove "Answer: "
         .toList();
     print("Answers: $answers");
@@ -163,6 +227,3 @@ Future<List<Question>> getClaudeQuestions(String content) async {
     return [];
   }
 }
-
-//voice interaction with claude
-//database
