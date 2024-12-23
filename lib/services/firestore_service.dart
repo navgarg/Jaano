@@ -1,6 +1,7 @@
 
 
 import 'package:cloud_firestore/cloud_firestore.dart' hide Source;
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import '../models/article_model.dart';
 import 'article_api_service.dart';
@@ -12,12 +13,12 @@ class FirestoreService {
 
   // String date = '18-11-2024';
 
-  Future<List<Article>> getFirebaseArticles() async {
+  Future<List<Article>> getFirebaseArticles(Categories cat) async {
     print(date);
     print(ref);
     DocumentSnapshot snapshot = await ref.doc(date).get();
     QuerySnapshot<Map<String, dynamic>> articleSnapshot =
-    await ref.doc(date).collection('arts').get();
+    await ref.doc(date).collection('arts').where("category", isEqualTo: cat.toString()).get();
 
     print("get articles");
     print(snapshot.data());
@@ -52,6 +53,9 @@ class FirestoreService {
 
       }
 
+      print(articles[0].title);
+      print(articles[1].title);
+      print(articles[2].title);
       return articles;
     }
 
