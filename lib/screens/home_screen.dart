@@ -1,8 +1,10 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:intl/intl.dart';
 import 'package:jaano/services/firestore_service.dart';
 import 'package:jaano/widgets/QuizDialog.dart';
+import 'package:jaano/widgets/article_expanded_view.dart';
 import '../constants.dart';
 import '../models/article_model.dart';
 import '../services/article_api_service.dart';
@@ -15,6 +17,14 @@ class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
+//reduce gap
+//start quiz on next screen - expanded view - //todo: will this be a dialog or new screen?
+//highlight the text that is being read
+//press read => player mode of article
+//font change
+//script to convert news to json as needed
+
+
 
 class _HomeScreenState extends State<HomeScreen> {
 
@@ -68,6 +78,55 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Column(
               children: [
+                const SizedBox(height: 20.0,),
+                SizedBox(
+                  height: 50.0,
+                  width: double.infinity,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: IconButton(
+                          onPressed: (){
+
+                          },
+                            icon: const ImageIcon(AssetImage("assets/prev_date.png"))
+                        ),
+                      ),
+                      Expanded(
+                        flex: 2,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            DateFormat("dd/MM/yyyy").format(DateTime.now()),
+                            style: const TextStyle(
+                                fontSize: 12.0,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: IconButton(
+                            onPressed: (){
+
+                            },
+                            icon: const ImageIcon(AssetImage("assets/next_date.png"))
+                        ),
+                      ),
+
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20.0),
                 CarouselSlider.builder(
                   itemCount: items.length,
                   itemBuilder: (context, index, realIndex) {
@@ -99,20 +158,21 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   },
                   options: CarouselOptions(
-                    height: 180, // Adjust height for circle and text
+                    height: 100, // Adjust height for circle and text
                     autoPlay: false,
-                    enlargeCenterPage: true,
-                    viewportFraction: 0.3,
+                    enlargeCenterPage: false,
+                    viewportFraction: 0.28,
                     onPageChanged: (index, reason) {
-                      //todo: implement on page change
+                      //todo: implement on page change with riverpod
                       print("Current page: $index");
                     },
                   ),
                 ),
           
-                const SizedBox(height: 10.0),
+                // const SizedBox(height: 10.0),
           
                 Expanded(
+                  flex: 1,
                   child: FutureBuilder<List<Article>>(
                   future: _articlesFuture,
                   builder: (context, snapshot) {
@@ -130,11 +190,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       List<Article> articles = snapshot.data!;
                       print(articles);
                       // List<Article> techArticles = articles.where((art) => art.category == Categories.technology).toList();
-                  
+
                       if (_isExpanded.isEmpty || _isExpanded.length != articles.length) {
                         _initializeExpansionStates(articles.length);
                       }
-                  
+
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
                         child: ListView.builder(
@@ -149,14 +209,26 @@ class _HomeScreenState extends State<HomeScreen> {
                                       _isExpanded[index] = !_isExpanded[index];
                                     });
                                   },
-                                  elevation: 1,
+                                  elevation: 0,
                                   children: [
                                     ExpansionPanel(
+                                      splashColor: const Color(0xFFB1A1FC),
                                       canTapOnHeader: true,
                                       isExpanded: _isExpanded[index],
-                                      backgroundColor: const Color(0xFFB1A1FC),
+                                      backgroundColor: Colors.transparent,
                                       headerBuilder: (BuildContext ctx, bool isExp) {
                                         return Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(10.0),
+                                              gradient: LinearGradient(
+                                                begin: Alignment.centerLeft,
+                                                end: Alignment.centerRight,
+                                                colors: [
+                                                  const Color(0xFFB1A1FC).withOpacity(1.0), // Start with solid color
+                                                  const Color(0xFFB1A1FC).withOpacity(0.0), // End with transparent
+                                                ],
+                                              ),
+                                          ),
                                           padding: const EdgeInsets.symmetric(vertical: 8.0),
                                           child: ListTile(
                                             leading: Image.asset('assets/circuit.png'),
@@ -171,39 +243,52 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ),
                                         );
                                       },
-                                      body: Padding(
-                                        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
-                                        child: Column(
-                                          children: [
-                                            Text(
-                                              article.content ?? '',
-                                              style: const TextStyle(
-                                                fontSize: 14.0,
-                                                color: Colors.black,
+                                      body: Container(
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            begin: Alignment.centerLeft,
+                                            end: Alignment.centerRight,
+                                            colors: [
+                                              const Color(0xFFB1A1FC).withOpacity(1.0),
+                                              const Color(0xFFB1A1FC).withOpacity(0.0),
+                                            ],
+                                          )
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                article.description ?? '',
+                                                style: const TextStyle(
+                                                  fontSize: 14.0,
+                                                  color: Colors.black,
+                                                ),
                                               ),
-                                            ),
-                                            Align(
-                                              alignment: Alignment.bottomRight,
-                                              child: TextButton(
-                                                onPressed: () {
-                                                  showDialog(
-                                                    context: context,
-                                                    builder: (context) => QuizDialog(article: article),
-                                                  );
-                                                },
-                                                child: const Text("Start Quiz"),
+                                              Align(
+                                                alignment: Alignment.bottomRight,
+                                                child: TextButton(
+                                                  onPressed: () {
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (context) => ExpandedArticle(article: article),
+                                                      // builder: (context) => QuizDialog(article: article),
+                                                    );
+                                                  },
+                                                  child: const Text("Read More"),
+                                                ),
                                               ),
-                                            ),
-                                            Align(
-                                              alignment: Alignment.bottomLeft,
-                                              child: TextButton(
-                                                onPressed: () {
-                                                  tts(article.content);
-                                                },
-                                                child: const Text("Read"),
+                                              Align(
+                                                alignment: Alignment.bottomLeft,
+                                                child: TextButton(
+                                                  onPressed: () {
+                                                    tts(article.description);
+                                                  },
+                                                  child: const Text("Read Aloud"),
+                                                ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -221,6 +306,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                             ),
                 ),
+
               ]
             ),
           ]
