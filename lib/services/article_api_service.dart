@@ -10,7 +10,7 @@ class ApiService {
   final client = http.Client();
 
   ///Make HTTP request and get news articles from API
-  Future<List<Article>> getArticle() async {
+  Future<List<Article>> getArticle(Categories cat) async {
     final uri = Uri.https(baseUrl, newsUrl);
     final response = await client.get(uri);
     var json = jsonDecode(response.body);
@@ -26,6 +26,8 @@ class ApiService {
       service.addArticle(art);
     }
 
-    return articles;
+    List<Article> arts = articles.where((art) => art.category == cat).toList();
+
+    return arts;
   }
 }

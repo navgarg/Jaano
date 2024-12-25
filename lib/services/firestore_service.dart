@@ -61,7 +61,7 @@ class FirestoreService {
 
     else {
       ApiService client = ApiService();
-      return client.getArticle();
+      return client.getArticle(Categories.technology);
     }
   }
 

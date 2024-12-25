@@ -4,7 +4,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:intl/intl.dart';
 import 'package:jaano/services/firestore_service.dart';
 import 'package:jaano/widgets/QuizDialog.dart';
-import 'package:jaano/widgets/article_expanded_view.dart';
+import 'package:jaano/screens/expanded_article_screen.dart';
 import '../constants.dart';
 import '../models/article_model.dart';
 import '../services/article_api_service.dart';
@@ -25,7 +25,6 @@ class HomeScreen extends StatefulWidget {
 //script to convert news to json as needed
 
 
-
 class _HomeScreenState extends State<HomeScreen> {
 
   FirestoreService client = FirestoreService();
@@ -33,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final FlutterTts flutterTts = FlutterTts();
 
   List<bool> _isExpanded = [];
+  int _currentIndex = 0;
   Future<List<Article>>? _articlesFuture;
 
   @override
@@ -149,9 +149,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(height: 8),
                         Text(
                           item['label']!,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 16,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: _currentIndex==index ? FontWeight.w500 : FontWeight.w300,
                           ),
                         ),
                       ],
@@ -164,7 +164,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     viewportFraction: 0.28,
                     onPageChanged: (index, reason) {
                       //todo: implement on page change with riverpod
-                      print("Current page: $index");
+                      setState(() {
+                        print("Current page: $index");
+                        _currentIndex = index;
+                      });
                     },
                   ),
                 ),
@@ -206,6 +209,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ExpansionPanelList(
                                   expansionCallback: (int panelIndex, bool isExpanded) {
                                     setState(() {
+                                      _isExpanded = List.generate(_isExpanded.length, (_) => false);
                                       _isExpanded[index] = !_isExpanded[index];
                                     });
                                   },
@@ -236,7 +240,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               article.title,
                                               style: const TextStyle(
                                                 fontSize: 16.0,
-                                                color: Colors.white,
+                                                color: Colors.black,
                                                 fontWeight: FontWeight.w500,
                                               ),
                                             ),
@@ -269,9 +273,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 alignment: Alignment.bottomRight,
                                                 child: TextButton(
                                                   onPressed: () {
-                                                    showDialog(
-                                                      context: context,
-                                                      builder: (context) => ExpandedArticle(article: article),
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(builder: (context) => ExpandedArticleScreen(article: article)),
                                                       // builder: (context) => QuizDialog(article: article),
                                                     );
                                                   },
@@ -310,6 +314,35 @@ class _HomeScreenState extends State<HomeScreen> {
               ]
             ),
           ]
+        ),
+      ),
+      bottomNavigationBar: Container(
+        height: 100.0,
+        decoration: BoxDecoration(
+          image: const DecorationImage(
+            image: AssetImage('assets/tech/bottom.png'), // Replace with your image path
+            fit: BoxFit.cover, // Adjust how the image fits the container
+          ),
+          borderRadius: BorderRadius.circular(15), // Optional: Rounded corners
+          // boxShadow: const [
+          //   BoxShadow(
+          //     color: Colors.black26,
+          //     blurRadius: 8,
+          //     offset: Offset(2, 4),
+          //   ),
+          // ],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              flex: 1,
+              child: Image.asset("assets/tech/Diamond.png")
+            ),
+            Expanded(
+                flex: 1,
+                child: Image.asset("assets/tech/Diamond.png")
+            ),
+          ],
         ),
       ),
     );
