@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:intl/intl.dart';
 import 'package:jaano/services/firestore_service.dart';
-import 'package:jaano/widgets/QuizDialog.dart';
 import 'package:jaano/screens/expanded_article_screen.dart';
 import '../constants.dart';
 import '../models/article_model.dart';
@@ -17,10 +16,6 @@ class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
-//reduce gap
-//start quiz on next screen - expanded view - //todo: will this be a dialog or new screen?
-//highlight the text that is being read
-//press read => player mode of article
 //font change
 //script to convert news to json as needed
 
@@ -60,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
     {'imagePath':'assets/food.png', 'label':'Food'},
     {'imagePath':'assets/science.png', 'label':'Science'},
     {'imagePath':'assets/sports.png', 'label':'Sports'},
-    {'imagePath':'assets/tech/tech_3.png', 'label':'Technology'},
+    {'imagePath':'assets/tech/tech_3.png', 'label':'Tech'},
   ];
 
   @override

@@ -229,8 +229,5 @@ Future<List<Question>> getClaudeQuestions(String content) async {
 }
 
 //todo: quiz complete
-//send latest apk everyday to keep on same page
-//dont call for summarising everyday..keep summaries somewhere
-
 //if no img, dont put generic
 //mic animation to indicate listening mode and also show differently to show its getting voice

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:intl/intl.dart';
 import 'package:jaano/constants.dart';
+import 'package:jaano/screens/quiz_screen.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
 import '../models/article_model.dart';
-import '../widgets/QuizDialog.dart';
 
 class ExpandedArticleScreen extends StatefulWidget {
   final Article article;
@@ -198,10 +198,14 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen> {
                         icon: Image.asset("assets/tech/quiz.png"),
                         onPressed: () {
                           Navigator.pop(context);
-                          showDialog(
-                            context: context,
-                            builder: (context) => QuizDialog(article: widget.article),
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => QuizScreen(article: widget.article)),
                           );
+                          // showDialog(
+                          //   context: context,
+                          //   builder: (context) => (article: widget.article),
+                          // );
                         },
                       ),
                     ),
