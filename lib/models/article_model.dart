@@ -53,8 +53,7 @@ class Question{
 }
 ///predefined categories, to avoid confusion with strings
 // currently using ent, tech, sci, edu, sports, tourism
-enum Categories {domestic, education, entertainment, environment, food,
-  health, lifestyle, other, politics, science, sports, technology, top, tourism, world, business
+enum Categories {economy, technology, sports, science, food, nature, other
 }
 
 enum Status {complete, incomplete}

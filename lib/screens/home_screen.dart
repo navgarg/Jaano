@@ -13,10 +13,11 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../services/riverpod_providers.dart';
 
+//todo: radius for reading area
+//images
+
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({Key? key}) : super(key: key);
-
-
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,6 +25,7 @@ class HomeScreen extends ConsumerWidget {
     final carouselIndex = ref.watch(carouselIndexProvider);
     final articlesAsync = ref.watch(articlesProvider);
     final expandedPanels = ref.watch(expandedPanelsProvider);
+
 
     final FlutterTts flutterTts = FlutterTts();
     flutterTts.setLanguage('en-US');
@@ -34,46 +36,7 @@ class HomeScreen extends ConsumerWidget {
       await flutterTts.speak(content ?? "");
     }
 
-
-  // List<bool> _isExpanded = [];
-  // int _currentIndex = 0;
-  // Future<List<Article>>? _articlesFuture;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   //todo: update with every tab for every category
-  //   _articlesFuture = client.getFirebaseArticles(Categories.technology);
-  //   flutterTts.setLanguage('en-US'); //todo: set language after getting from device (?)
-  //   flutterTts.setPitch(1.0);
-  //   flutterTts.setSpeechRate(0.2);
-  // }
-  //
-  // void _initializeExpansionStates(int length) {
-  //   _isExpanded = List<bool>.filled(length, false);
-  // }
-
-  // void tts (String? content) async {
-  //   await flutterTts.speak(content ?? "");
-  //
-  // }
-
-  // final List<Map<String, String>> items = [
-  //   {'imagePath':'assets/economy.png', 'label':'Economy'},
-  //   {'imagePath':'assets/environment.png', 'label':'Nature'},
-  //   {'imagePath':'assets/food.png', 'label':'Food'},
-  //   {'imagePath':'assets/science.png', 'label':'Science'},
-  //   {'imagePath':'assets/sports.png', 'label':'Sports'},
-  //   {'imagePath':'assets/tech/tech_3.png', 'label':'Tech'},
-  // ];
-  //
-  // @override
-  // Widget build(BuildContext context) {
-
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('Jaano'),
-      // ),
       body: SafeArea(
         child: Stack(
               children: <Widget>[
@@ -136,6 +99,7 @@ class HomeScreen extends ConsumerWidget {
                   itemCount: 6,
                   itemBuilder: (context, index, realIndex) {
                     final label = ["Economy", "Nature", "Food", "Science", "Sports", "Tech"][index];
+                    final image = ["assets/economy.png", "assets/environment.png", "assets/food.png", "assets/science.png", "assets/sports.png", "assets/tech/tech_3.png"][index];
                     return Column(
                       mainAxisSize: MainAxisSize.max,
                       children: [
@@ -145,7 +109,7 @@ class HomeScreen extends ConsumerWidget {
                           child: ClipOval(
                             child: Image.asset(
                               // item['imagePath']!,
-                              "assets/tech/tech_3.png", //todo: update with every cat
+                              image, //todo: update with every cat
                               fit: BoxFit.cover,
                               width: 90,
                               height: 90,
@@ -156,7 +120,7 @@ class HomeScreen extends ConsumerWidget {
                         Text(
                           label,
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 12,
                             fontWeight: carouselIndex == index ? FontWeight.bold : FontWeight.normal,
                           ),
                         ),
@@ -169,7 +133,6 @@ class HomeScreen extends ConsumerWidget {
                     enlargeCenterPage: false,
                     viewportFraction: 0.28,
                     onPageChanged: (index, reason) {
-                      //todo: implement on page change with riverpod
                       ref.read(carouselIndexProvider.notifier).state = index;
                     },
                   ),
@@ -309,144 +272,6 @@ class HomeScreen extends ConsumerWidget {
                     error: (e, _) => Center(child: Text('Error: $e')),
                   ),
                 ),
-          
-                // Expanded(
-                //   flex: 1,
-                //   child: FutureBuilder<List<Article>>(
-                //   future: _articlesFuture,
-                //   builder: (context, snapshot) {
-                //     print("in builder.");
-                //     if (snapshot.connectionState == ConnectionState.waiting) {
-                //       print("waiting");
-                //       return const Center(child: CircularProgressIndicator());
-                //     }
-                //     else if (snapshot.hasError) {
-                //       print("error in builder");
-                //       return Center(child: Text('Error: ${snapshot.error}'));
-                //     }
-                //     else if (snapshot.hasData) {
-                //       print("snap has data");
-                //       List<Article> articles = snapshot.data!;
-                //       print(articles);
-                //       // List<Article> techArticles = articles.where((art) => art.category == Categories.technology).toList();
-                //
-                //       if (_isExpanded.isEmpty || _isExpanded.length != articles.length) {
-                //         _initializeExpansionStates(articles.length);
-                //       }
-                //
-                //       return Padding(
-                //         padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
-                //         child: ListView.builder(
-                //           itemCount: articles.length,
-                //           itemBuilder: (context, index) {
-                //             Article article = articles[index];
-                //             return Column(
-                //               children: [
-                //                 ExpansionPanelList(
-                //                   expansionCallback: (int panelIndex, bool isExpanded) {
-                //                     setState(() {
-                //                       _isExpanded = List.generate(_isExpanded.length, (_) => false);
-                //                       _isExpanded[index] = !_isExpanded[index];
-                //                     });
-                //                   },
-                //                   elevation: 0,
-                //                   children: [
-                //                     ExpansionPanel(
-                //                       splashColor: const Color(0xFFB1A1FC),
-                //                       canTapOnHeader: true,
-                //                       isExpanded: _isExpanded[index],
-                //                       backgroundColor: Colors.transparent,
-                //                       headerBuilder: (BuildContext ctx, bool isExp) {
-                //                         return Container(
-                //                             decoration: BoxDecoration(
-                //                               borderRadius: BorderRadius.circular(10.0),
-                //                               gradient: LinearGradient(
-                //                                 begin: Alignment.centerLeft,
-                //                                 end: Alignment.centerRight,
-                //                                 colors: [
-                //                                   const Color(0xFFB1A1FC).withOpacity(1.0), // Start with solid color
-                //                                   const Color(0xFFB1A1FC).withOpacity(0.0), // End with transparent
-                //                                 ],
-                //                               ),
-                //                           ),
-                //                           padding: const EdgeInsets.symmetric(vertical: 8.0),
-                //                           child: ListTile(
-                //                             leading: Image.asset('assets/circuit.png'),
-                //                             title: Text(
-                //                               article.title,
-                //                               style: const TextStyle(
-                //                                 fontSize: 16.0,
-                //                                 color: Colors.black,
-                //                                 fontWeight: FontWeight.w500,
-                //                               ),
-                //                             ),
-                //                           ),
-                //                         );
-                //                       },
-                //                       body: Container(
-                //                         decoration: BoxDecoration(
-                //                           gradient: LinearGradient(
-                //                             begin: Alignment.centerLeft,
-                //                             end: Alignment.centerRight,
-                //                             colors: [
-                //                               const Color(0xFFB1A1FC).withOpacity(1.0),
-                //                               const Color(0xFFB1A1FC).withOpacity(0.0),
-                //                             ],
-                //                           )
-                //                         ),
-                //                         child: Padding(
-                //                           padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
-                //                           child: Column(
-                //                             children: [
-                //                               Text(
-                //                                 article.description ?? '',
-                //                                 style: const TextStyle(
-                //                                   fontSize: 14.0,
-                //                                   color: Colors.black,
-                //                                 ),
-                //                               ),
-                //                               Align(
-                //                                 alignment: Alignment.bottomRight,
-                //                                 child: TextButton(
-                //                                   onPressed: () {
-                //                                     Navigator.push(
-                //                                         context,
-                //                                         MaterialPageRoute(builder: (context) => ExpandedArticleScreen(article: article)),
-                //                                       // builder: (context) => QuizDialog(article: article),
-                //                                     );
-                //                                   },
-                //                                   child: const Text("Read More"),
-                //                                 ),
-                //                               ),
-                //                               Align(
-                //                                 alignment: Alignment.bottomLeft,
-                //                                 child: TextButton(
-                //                                   onPressed: () {
-                //                                     tts(article.description);
-                //                                   },
-                //                                   child: const Text("Read Aloud"),
-                //                                 ),
-                //                               ),
-                //                             ],
-                //                           ),
-                //                         ),
-                //                       ),
-                //                     ),
-                //                   ],
-                //                 ),
-                //                 // Add spacing below each panel
-                //                 const SizedBox(height: 16.0),
-                //               ],
-                //             );
-                //           },
-                //         ),
-                //       );
-                //     }
-                //     return const Center(child: Text('No articles found.'));
-                //   },
-                //             ),
-                // ),
-
               ]
             ),
           ]
@@ -460,13 +285,6 @@ class HomeScreen extends ConsumerWidget {
             fit: BoxFit.cover, // Adjust how the image fits the container
           ),
           borderRadius: BorderRadius.circular(15), // Optional: Rounded corners
-          // boxShadow: const [
-          //   BoxShadow(
-          //     color: Colors.black26,
-          //     blurRadius: 8,
-          //     offset: Offset(2, 4),
-          //   ),
-          // ],
         ),
         child: Row(
           children: [

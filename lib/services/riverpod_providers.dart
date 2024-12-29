@@ -4,8 +4,10 @@ import '../models/article_model.dart';
 import '../constants.dart';
 
 final articlesProvider = FutureProvider<List<Article>>((ref) async {
+  final selectedCategory = ref.watch(selectedCategoryProvider);
   FirestoreService client = FirestoreService();
-  return await client.getFirebaseArticles(Categories.technology); //todo: update
+  print(selectedCategory);
+  return await client.getFirebaseArticles(selectedCategory); //todo: update
 });
 
 class ExpandedPanelsNotifier extends StateNotifier<List<bool>> {
@@ -39,4 +41,13 @@ StateNotifierProvider<ExpandedPanelsNotifier, List<bool>>(
 
 final carouselIndexProvider = StateProvider<int>((ref) => 0);
 
+final selectedCategoryProvider = Provider<Categories>((ref) {
+  print("page changed");
+  final currentIndex = ref.watch(carouselIndexProvider);
+  List<Categories> categoryEnums = ["economy", "nature", "food", "science", "sports", "technology"]
+      .map((str) => Categories.values.byName(str))
+      .toList();
+
+  return categoryEnums[currentIndex]; // Map index to the enum or category list
+});
 // final expandedPanelsProvider = StateProvider<List<bool>>((ref) => []);

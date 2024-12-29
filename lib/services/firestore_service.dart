@@ -14,6 +14,9 @@ class FirestoreService {
   // String date = '18-11-2024';
 
   Future<List<Article>> getFirebaseArticles(Categories cat) async {
+    // Categories cat = Categories.values.byName(category);
+    print(cat);
+    // print(category);
     print(date);
     print(ref);
     DocumentSnapshot snapshot = await ref.doc(date).get();
@@ -61,8 +64,9 @@ class FirestoreService {
 
     else {
       ApiService client = ApiService();
-      return client.getArticle(Categories.technology);
+      return client.getArticle(cat);
     }
+    return [];
   }
 
   Future<void> addArticle(Article article) async {
