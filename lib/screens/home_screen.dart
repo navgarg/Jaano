@@ -13,11 +13,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../services/riverpod_providers.dart';
 
-//todo: radius for reading area
 //images
 
 class HomeScreen extends ConsumerWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -215,7 +214,8 @@ class HomeScreen extends ConsumerWidget {
                                               const Color(0xFFB1A1FC).withOpacity(1.0),
                                               const Color(0xFFB1A1FC).withOpacity(0.0),
                                             ],
-                                          )
+                                          ),
+                                        borderRadius: BorderRadius.circular(10.0),
                                       ),
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),

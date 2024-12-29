@@ -160,7 +160,7 @@ Future<String> getClaudeSummary (String link) async {
 
   try {
     final response = await claudeService.sendMessage(
-      content: "Summarize the news article given at the link: $link for a child in age group of 6-10 years. Use easy to understand language and short sentences. Make it engaging and interesting, while keeping all main points intact. Do not go over 4-5 lines. Do not include introductory line at the start.", //todo: change prompt
+      content: "Summarize the news article given at the link: $link for a child in age group of 6-10 years. Use easy to understand language and short sentences. Make it engaging and interesting, while keeping all main points intact. Do not go over 4-5 lines. Do not include introductory line at the start.",
     );
     print(response);
     print(response['content']);
@@ -227,6 +227,6 @@ Future<List<Question>> getClaudeQuestions(String content) async {
   }
 }
 
-//todo: quiz complete
+//todo:
 //if no img, dont put generic
 //mic animation to indicate listening mode and also show differently to show its getting voice

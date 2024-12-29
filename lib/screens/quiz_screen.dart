@@ -1,75 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:jaano/services/riverpod_providers.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
 import '../models/article_model.dart';
 
-class QuizScreen extends StatefulWidget {
+class QuizScreen extends ConsumerWidget {
   final Article article;
+
   const QuizScreen({
     super.key,
     required this.article,
   });
-
   @override
-  State<QuizScreen> createState() => _QuizScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    print("in build for quiz");
+    final currQues = ref.watch(questionIndexProvider);
+    final speechState = ref.watch(speechStateProvider);
+    final speechNotifier = ref.read(speechStateProvider.notifier);
 
-class _QuizScreenState extends State<QuizScreen> {
-  int _currQues = 1;
-
-  final SpeechToText _speechToText = SpeechToText();
-  bool _speechEnabled = false;
-  String _wordsSpoken = "";
-
-  @override
-  void initState() {
-    super.initState();
-    initSpeech();
-  }
-
-  void initSpeech() async{
-    _speechEnabled = await _speechToText.initialize();
-    setState(() {});
-  }
-
-  void _startListening() async {
-    await _speechToText.listen(
-      onResult: _onSpeechResult,
-      pauseFor: const Duration(seconds: 20),
-      listenOptions: SpeechListenOptions(listenMode: ListenMode.dictation),
-    );
-    setState(() {
-
-    });
-  }
-
-  void _stopListening() async {
-    await _speechToText.stop();
-    print("words:");
-    print(_wordsSpoken);
-    if (_wordsSpoken == widget.article.questions![0].answer) {
-      print("correct");
-    }
-    else{
-
-      print("wrong");
-    }
-    setState(() {
-
-    });
-  }
-
-  void _onSpeechResult(result) async {
-    ///update UI with words that were transcribed.
-    setState(() {
-      _wordsSpoken = "${result.recognizedWords}";
-    });
-  }
-
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -90,8 +40,11 @@ class _QuizScreenState extends State<QuizScreen> {
                     child: IconButton(
                         onPressed: (){
 
+                          if (currQues == 2) ref.read(questionIndexProvider.notifier).state = 1;
                         },
-                        icon: const ImageIcon(AssetImage("assets/prev_date.png"))
+                        // icon: _currQues == 1 ? const ImageIcon(AssetImage("assets/prev_date_greyed.png"))
+                        // : const ImageIcon(AssetImage("assets/prev_date.png"))
+                      icon: const ImageIcon(AssetImage("assets/prev_date.png"))
                     ),
                   ),
                   Expanded(
@@ -103,7 +56,7 @@ class _QuizScreenState extends State<QuizScreen> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        "Question $_currQues",
+                        "Question $currQues",
                         style: const TextStyle(
                           fontSize: 20.0,
                           fontWeight: FontWeight.w500,
@@ -117,7 +70,7 @@ class _QuizScreenState extends State<QuizScreen> {
                     flex: 1,
                     child: IconButton(
                         onPressed: (){
-
+                          if (currQues == 1) ref.read(questionIndexProvider.notifier).state = 2;
                         },
                         icon: const ImageIcon(AssetImage("assets/next_date.png"))
                     ),
@@ -132,7 +85,7 @@ class _QuizScreenState extends State<QuizScreen> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Image.network(
-                    widget.article.urlToImage.toString(),
+                    article.urlToImage.toString(),
                     loadingBuilder: (context, child, loadingProgress) {
                       if (loadingProgress == null) {
                         return child; // Show the image once it's loaded
@@ -159,7 +112,7 @@ class _QuizScreenState extends State<QuizScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Text(
-                  widget.article.questions?[0].question.toString() ?? " ", // todo: show both questions
+                  article.questions?[currQues-1].question.toString() ?? " ",
                   style: const TextStyle(fontSize: 16),
                   textAlign: TextAlign.justify,
                 ),
@@ -169,9 +122,9 @@ class _QuizScreenState extends State<QuizScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Text(
-                  _speechToText.isListening
+                    speechState.isListening
                       ? "Listening..."
-                      : _speechEnabled
+                      : speechState.speechEnabled
                       ? "Tap button to answer"
                       : "Speech not available",
                   style: const TextStyle(
@@ -187,7 +140,7 @@ class _QuizScreenState extends State<QuizScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: SingleChildScrollView(
                   child: Text(
-                    _wordsSpoken,
+                    speechState.wordsSpoken,
                     style: const TextStyle(
                       fontSize: 16,
                       fontStyle: FontStyle.italic,
@@ -204,12 +157,12 @@ class _QuizScreenState extends State<QuizScreen> {
                   alignment: Alignment.bottomRight,
                   child: TextButton(
                     onPressed: () {
-                      _speechToText.isListening
-                          ? _stopListening()
-                          : _startListening();
+                      speechState.isListening
+                          ? speechNotifier.stopListening(article)
+                          : speechNotifier.startListening();
                     },
                     child: Text(
-                      _speechToText.isListening ? "Stop Listening" : "Start Listening",
+                      speechState.isListening ? "Stop Listening" : "Start Listening",
                     ),
                   ),
                 ),
