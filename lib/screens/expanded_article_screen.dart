@@ -3,6 +3,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:intl/intl.dart';
 import 'package:jaano/constants.dart';
 import 'package:jaano/screens/quiz_screen.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
 import '../models/article_model.dart';
@@ -109,21 +110,41 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen> {
                   Center(
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Image.network(
-                        widget.article.urlToImage.toString(),
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) {
-                            return child; // Show the image once it's loaded
-                          }
-                          return Center(
-                            child: CircularProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded /
-                                  (loadingProgress.expectedTotalBytes ?? 1)
-                                  : null,
+                      child: Stack(
+                        children: [
+                          // Shimmer effect
+                          Shimmer.fromColors(
+                          baseColor: Colors.grey.shade300,
+                            highlightColor: Colors.grey.shade100,
+                            child: Container(
+                              height: 200.0,
+                              color: Colors.grey.shade300,
                             ),
-                          ); // Show a loader while the image loads
-                        },
+                          ),
+                          // Actual image
+                          Image.network(
+                              widget.article.urlToImage.toString(),
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) {
+                                  return child; // Show the image once it's loaded
+                                }
+                                return Container(); // Keep showing the shimmer effect while loading
+                              },
+                      // child: Image.network(
+                      //   widget.article.urlToImage.toString(),
+                      //   loadingBuilder: (context, child, loadingProgress) {
+                      //     if (loadingProgress == null) {
+                      //       return child; // Show the image once it's loaded
+                      //     }
+                      //     return Center(
+                      //       child: CircularProgressIndicator(
+                      //         value: loadingProgress.expectedTotalBytes != null
+                      //             ? loadingProgress.cumulativeBytesLoaded /
+                      //             (loadingProgress.expectedTotalBytes ?? 1)
+                      //             : null,
+                      //       ),
+                      //     ); // Show a loader while the image loads
+                      //   },
                         errorBuilder: (context, error, stackTrace) {
                           return const Text(
                             'Error loading image',
@@ -131,8 +152,10 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen> {
                           ); // Handle errors gracefully
                         },
                       ),
+                      ],
                     ),
                   ),
+        ),
                   const SizedBox(height: 30),
                   /// Date and Source
                   Container(

@@ -12,6 +12,7 @@ import '../services/claude_api_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../services/riverpod_providers.dart';
+import '../widgets/shimmer_placeholder.dart';
 
 //images
 
@@ -176,21 +177,22 @@ class HomeScreen extends ConsumerWidget {
                                 // },
                                 children: [
                                   ExpansionPanel(
-                                    splashColor: const Color(0xFFB1A1FC),
+                                    // splashColor: const Color(0xFFB1A1FC),
                                     canTapOnHeader: true,
                                     isExpanded: (index < expandedPanels.length) ? expandedPanels[index] : false,
-                                    backgroundColor: Colors.transparent,
+                                    // backgroundColor: Colors.transparent,
+                                    backgroundColor: const Color(0xFFB1A1FC),
                                     headerBuilder: (context, isExpanded) => Container(
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(10.0),
-                                        gradient: LinearGradient(
-                                          begin: Alignment.centerLeft,
-                                          end: Alignment.centerRight,
-                                          colors: [
-                                            const Color(0xFFB1A1FC).withOpacity(1.0), // Start with solid color
-                                            const Color(0xFFB1A1FC).withOpacity(0.0), // End with transparent
-                                          ],
-                                        ),
+                                        // gradient: LinearGradient(
+                                        //   begin: Alignment.centerLeft,
+                                        //   end: Alignment.centerRight,
+                                        //   colors: [
+                                        //     const Color(0xFFB1A1FC).withOpacity(1.0), // Start with solid color
+                                        //     const Color(0xFFB1A1FC).withOpacity(1.0), // End with transparent
+                                        //   ],
+                                        // ),
                                       ),
                                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                                       child: ListTile(
@@ -207,14 +209,14 @@ class HomeScreen extends ConsumerWidget {
                                     ),
                                     body: Container(
                                       decoration: BoxDecoration(
-                                          gradient: LinearGradient(
-                                            begin: Alignment.centerLeft,
-                                            end: Alignment.centerRight,
-                                            colors: [
-                                              const Color(0xFFB1A1FC).withOpacity(1.0),
-                                              const Color(0xFFB1A1FC).withOpacity(0.0),
-                                            ],
-                                          ),
+                                          // gradient: LinearGradient(
+                                          //   begin: Alignment.centerLeft,
+                                          //   end: Alignment.centerRight,
+                                          //   colors: [
+                                          //     const Color(0xFFB1A1FC).withOpacity(1.0),
+                                          //     const Color(0xFFB1A1FC).withOpacity(0.0),
+                                          //   ],
+                                          // ),
                                         borderRadius: BorderRadius.circular(10.0),
                                       ),
                                       child: Padding(
@@ -268,7 +270,7 @@ class HomeScreen extends ConsumerWidget {
                         ),
                       );
                     },
-                    loading: () => const Center(child: CircularProgressIndicator()),
+                    loading: () => const ShimmerPlaceholder(), // Use shimmer during loading
                     error: (e, _) => Center(child: Text('Error: $e')),
                   ),
                 ),
@@ -286,15 +288,21 @@ class HomeScreen extends ConsumerWidget {
           ),
           borderRadius: BorderRadius.circular(15), // Optional: Rounded corners
         ),
-        child: Row(
+        child: const Row(
           children: [
             Expanded(
-              flex: 1,
-              child: Image.asset("assets/tech/Diamond.png")
+              flex: 2,
+              child: Text(
+                  "243",
+                textAlign: TextAlign.center,
+              )
             ),
             Expanded(
                 flex: 1,
-                child: Image.asset("assets/tech/Diamond.png")
+                child: Text(
+                    "124",
+                    textAlign: TextAlign.center
+                )
             ),
           ],
         ),
@@ -302,3 +310,34 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 }
+
+//read aloud not there.
+//on start listening, make overlay and mic animation.
+
+//shared preference implement on first open (on bg?)
+//grey pulse to show loader - boxes to show layout of app
+//heights in percentages? for sized boxes
+//no source in title.
+//summary cut - no partially expanded state. remove expansionPanel
+
+//expanded view - add back arrow and name of category
+//cache the imgs and stuff in shared preferences.
+// keep placeholder img box so that text doesnt move
+//expanded screen revised figma.
+//article text is a shade lighter.
+//font and size of text should be same
+//increase spacing for article text.
+//tts should read title and stuff too. audio prompt to play quiz.
+//quiz button can pulse when audio is played.
+//record voices for tts and send for options.
+//when reading stops unhighlight the word
+
+//carousel is not infinite.
+//greyed and locked icons for other categories.
+//other categories unlocked only by completing the prev category.
+//when tech completed, economy is highlighted.
+//rings are empty when new category is started
+//shadow to highlight the category selected
+
+//animation for smooth transition from non expanded view to expanded view.
+
