@@ -71,6 +71,7 @@ class Article {
   String? urlToImage;
   String? publishedAt;
   String? content;
+  bool isCompleted;
   Article(
       {required this.source,
         required this.author,
@@ -82,7 +83,9 @@ class Article {
         required this.url,
         required this.urlToImage,
         required this.publishedAt,
-        required this.content});
+        required this.content,
+        required this.isCompleted,
+      });
 
   factory Article.fromFirestore (DocumentSnapshot<Map<String, dynamic>> art, Source source, List<Question> questions){
     final data = art.data()!;
@@ -105,7 +108,9 @@ class Article {
         url: data['url'] ?? "",
         urlToImage: data['urlToImage'] ?? "",
         publishedAt: data['publishedAt'] ?? "",
-        content: data['content'] ?? "");
+        content: data['content'] ?? "",
+        isCompleted: false,
+    );
   }
 
   Map<String, dynamic> toMap() {
@@ -149,6 +154,7 @@ class Article {
         // status: Status.incomplete,
         questions: quests,
         category: cat, //todo: update wrt new json data
+        isCompleted: false
       );
     }
   }

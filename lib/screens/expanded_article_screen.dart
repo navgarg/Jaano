@@ -66,9 +66,12 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen> {
 
   }
 
-  void ttsSpeak (String? content) async {
+  void ttsSpeak (Article article) async {
     await flutterTts.awaitSpeakCompletion(true);
-    await flutterTts.speak(content ?? "");
+    await flutterTts.speak("${article.title} "
+        "Published by ${article.source.name} "
+        "on ${DateFormat("d MMMM yyyy").format(DateTime.parse(article.publishedAt!))}. "
+        "${article.content} " ?? "");
 
   }
 
@@ -237,9 +240,10 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen> {
               ),
             ),
           ),
+      //todo: make the isCompleted property true somewhere here.
       floatingActionButton: FloatingActionButton(
           onPressed: (){
-            isSpeaking ? ttsStop() : ttsSpeak(widget.article.content);
+            isSpeaking ? ttsStop() : ttsSpeak(widget.article);
           },
         backgroundColor: const Color(0xFF090438),
         child: Icon(
