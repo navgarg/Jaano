@@ -4,25 +4,23 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:intl/intl.dart';
 import 'package:jaano/screens/expanded_article_screen.dart';
+import 'package:jaano/widgets/bottom_navbar.dart';
 
+import '../constants.dart';
 import '../services/riverpod_providers.dart';
-import '../widgets/shimmer_placeholder.dart';
+import '../widgets/shimmer_list_placeholder.dart';
 
 //images
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
-
+//todo:
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     /// Watch providers
     final carouselIndex = ref.watch(carouselIndexProvider);
     final articlesAsync = ref.watch(articlesProvider);
     final expandedPanels = ref.watch(expandedPanelsProvider);
-    final pageController = PageController(
-      viewportFraction: 0.28,
-      initialPage: carouselIndex,
-    );
 
     final scrollController = ScrollController(
       initialScrollOffset:
@@ -37,29 +35,6 @@ class HomeScreen extends ConsumerWidget {
       "assets/sports/sport_bg.png",
       "assets/tech/tech_bg.png"
     ];
-
-    final List<int> bgColors = [
-      0xFF3EB99C,
-
-      ///economy background color
-      0xFF97E28D,
-
-      ///nature
-      0xFFFEC863,
-
-      ///food
-      0xFF7EBBF1,
-
-      ///science
-      0xFFF17E80,
-
-      ///sports
-      0xFFB1A1FC,
-
-      ///tech
-    ];
-
-    final labels = ["Economy", "Nature", "Food", "Science", "Sports", "Tech"];
 
     final images = [
       "assets/economy/eco_3.png",
@@ -129,68 +104,6 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 20.0),
-
-            // CarouselSlider.builder(
-            //   itemCount: 6,
-            //   itemBuilder: (context, index, realIndex) {
-            //     final label = [
-            //       "Economy",
-            //       "Nature",
-            //       "Food",
-            //       "Science",
-            //       "Sports",
-            //       "Tech"
-            //     ][index];
-            //     final image = [
-            //       "assets/economy/eco_3.png",
-            //       "assets/nature/nat_3.png",
-            //       "assets/food/food_3.png",
-            //       "assets/science/sci_3.png",
-            //       "assets/sports/sport_3.png",
-            //       "assets/tech/tech_3.png"
-            //     ][index];
-            //     return Column(
-            //       mainAxisSize: MainAxisSize.max,
-            //       children: [
-            //         CircleAvatar(
-            //           radius: 25,
-            //           backgroundColor: Colors.grey.shade200,
-            //           child: ClipOval(
-            //             child: Image.asset(
-            //               // item['imagePath']!,
-            //               image,
-            //               fit: BoxFit.cover,
-            //               width: 90,
-            //               height: 90,
-            //             ),
-            //           ),
-            //         ),
-            //         const SizedBox(height: 8),
-            //         Text(
-            //           label,
-            //           style: TextStyle(
-            //             fontSize: 12,
-            //             fontWeight: carouselIndex == index
-            //                 ? FontWeight.bold
-            //                 : FontWeight.normal,
-            //           ),
-            //         ),
-            //       ],
-            //     );
-            //   },
-            //   options: CarouselOptions(
-            //     height: 100,
-            //     autoPlay: false,
-            //     enlargeCenterPage: false,
-            //     enableInfiniteScroll: false,
-            //     viewportFraction: 0.28,
-            //     onPageChanged: (index, reason) {
-            //       ref.read(carouselIndexProvider.notifier).state = index;
-            //     },
-            //   ),
-            // ),
-
-            // const SizedBox(height: 10.0),
 
             SizedBox(
               height: 100,
@@ -288,6 +201,7 @@ class HomeScreen extends ConsumerWidget {
                               padding: const EdgeInsets.symmetric(
                                   vertical: 8.0, horizontal: 16.0),
                               child: ListTile(
+                                isThreeLine: false,
                                 leading: Image.asset('assets/circuit.png'),
                                 title: Text(
                                   article.title,
@@ -297,15 +211,16 @@ class HomeScreen extends ConsumerWidget {
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                                trailing: const Icon(Icons
-                                    .navigate_next_rounded), //todo: update when article has been read.
+                                trailing: article.isCompleted 
+                                    ? const Icon(Icons.check_circle_outline, color: Colors.green)
+                                    : const Icon(Icons.navigate_next_rounded), 
                                 onTap: () {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
                                               ExpandedArticleScreen(
-                                                  article: article)));
+                                                  article: article, index: carouselIndex,)));
                                 },
                               ),
                             ),
@@ -325,44 +240,17 @@ class HomeScreen extends ConsumerWidget {
           ]),
         ]),
       ),
-      bottomNavigationBar: Container(
-        height: 100.0,
-        decoration: BoxDecoration(
-          image: const DecorationImage(
-            image: AssetImage('assets/tech/bottom.png'),
-            fit: BoxFit.cover, // Adjust how the image fits the container
-          ),
-          borderRadius: BorderRadius.circular(15),
-        ),
-        child: const Row(
-          children: [
-            Expanded(
-                flex: 2,
-                child: Text(
-                  "243",
-                  textAlign: TextAlign.center,
-                )),
-            Expanded(flex: 1, child: Text("124", textAlign: TextAlign.center)),
-          ],
-        ),
-      ),
+      bottomNavigationBar: const BottomNavbar(),
     );
   }
 }
 
-//read aloud not there.
 //on start listening, make overlay and mic animation.
 
 //shared preference implement on first open (on bg?)
 //heights in percentages? for sized boxes
 
-//expanded view - add back arrow and name of category
 //cache the imgs and stuff in shared preferences.
-// keep placeholder img box so that text doesnt move
-//expanded screen revised figma.
-//article text is a shade lighter.
-//font and size of text should be same
-//increase spacing for article text.
 //tts should read title and stuff too. audio prompt to play quiz.
 //quiz button can pulse when audio is played.
 //record voices for tts and send for options.
@@ -375,3 +263,11 @@ class HomeScreen extends ConsumerWidget {
 //shadow to highlight the category selected
 
 //animation for smooth transition from non expanded view to expanded view.
+
+
+//article read when tts completed.
+
+//is what tts speaking alright?
+//article points being added - animation? show something
+//bottom bar use elements not image.
+

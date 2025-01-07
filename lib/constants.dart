@@ -14,3 +14,24 @@ const String Claude_baseUrl = 'https://api.anthropic.com/v1/messages';
 // const String newsUrl = "/v2/top-headlines";
 const String baseUrl = "raw.githubusercontent.com";
 const String newsUrl = "/navgarg/Loose-Files/master/jaano_newsdata.json";
+final List<int> bgColors = [
+  ///economy background color
+  0xFF3EB99C,
+
+  ///nature
+  0xFFAFE4A8,
+
+  ///food
+  0xFFFEC863,
+
+  ///science
+  0xFF7EBBF1,
+
+  ///sports
+  0xFFEA9D9E,
+
+  ///tech
+  0xFFCFC4FF,
+];
+
+final labels = ["Economy", "Nature", "Food", "Science", "Sports", "Tech"];

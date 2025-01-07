@@ -28,6 +28,7 @@ class Source{
     return Source(id: json["id"], name: json["name"]);
   }
 }
+
 class Question{
   String question;
   String? answer;
@@ -165,7 +166,7 @@ Future<String> getClaudeSummary (String link) async {
   );
 
   try {
-    final response = await claudeService.sendMessage(
+    final response = await claudeService.sendMessage( //todo: make it easy to understand, atleast 120 words.
       content: "Summarize the news article given at the link: $link for a child in age group of 6-10 years. Use easy to understand language and short sentences. Make it engaging and interesting, while keeping all main points intact. Do not go over 4-5 lines. Do not include introductory line at the start.",
     );
     print(response);
