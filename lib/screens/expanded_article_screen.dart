@@ -25,15 +25,16 @@ class ExpandedArticleScreen extends StatefulWidget {
 }
 
 enum SpeakingSection { none, title, content, quizPrompt }
+
 SpeakingSection currentSection = SpeakingSection.none;
 
 class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
     with TickerProviderStateMixin {
   final FlutterTts flutterTts = FlutterTts();
   bool isSpeaking = false;
+  bool shouldSpeak = false;
   int start = 0;
   int end = 0;
-
 
   late AnimationController _highlightController;
   late Animation<Color?> _highlightColor;
@@ -65,7 +66,7 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
 
     ///initialise the controller for pulsing quiz button
     _quizButtonController = AnimationController(
-      duration: const Duration(seconds: 1),
+      duration: const Duration(seconds: 2),
       vsync: this,
     ); // Creates a pulsing effect
 
@@ -78,6 +79,7 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
 
     ///initialise flutterTts event handlers
     flutterTts.setCompletionHandler(() {
+      if (!shouldSpeak) return;
       setState(() {
         isSpeaking = false;
         widget.article.isCompleted = true;
@@ -93,51 +95,67 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
   }
 
   void promptQuiz() {
+    if (!shouldSpeak) return;
     setState(() {
       currentSection = SpeakingSection.quizPrompt;
     });
 
     flutterTts.speak("Try the quiz to earn quiz points and advance in ranks!");
     _quizButtonController.forward(from: 0.0);
+    if (!shouldSpeak) return;
     setState(() {
       currentSection = SpeakingSection.none;
     });
-
   }
 
   void ttsSpeakTitle(Article article) async {
+    if (!shouldSpeak) return;
     setState(() {
       currentSection = SpeakingSection.title;
     });
 
-    await flutterTts.awaitSpeakCompletion(true);
-    await flutterTts.speak("${article.title} "
-        "Published by ${article.source.name} "
-        "on ${DateFormat("d MMMM yyyy").format(DateTime.parse(article.publishedAt!))}");
+    flutterTts.setProgressHandler(
+        (String text, int startOffset, int endOffset, String word) {
+      setState(() {
+        start = startOffset;
+        end = endOffset;
+      });
+      _highlightController.forward(from: 0.0);
+    });
 
+    await flutterTts.awaitSpeakCompletion(true);
+    await flutterTts.speak(article.title);
+    //"Published by ${article.source.name} "
+    //         "on ${DateFormat("d MMMM yyyy").format(DateTime.parse(article.publishedAt!))}"
+    if (!shouldSpeak) return;
     setState(() {
       currentSection = SpeakingSection.none;
     });
 
+    start = 0;
+    end = 0;
     ttsSpeak(article);
   }
 
   void ttsSpeak(Article article) async {
+    if (!shouldSpeak) return;
     setState(() {
       currentSection = SpeakingSection.content;
     });
 
     flutterTts.setProgressHandler(
-            (String text, int startOffset, int endOffset, String word) {
-          setState(() {
-            start = startOffset;
-            end = endOffset;
-          });
-          _highlightController.forward(from: 0.0);
-        });
+        (String text, int startOffset, int endOffset, String word) {
+      setState(() {
+        start = startOffset;
+        end = endOffset;
+      });
+      _highlightController.forward(from: 0.0);
+    });
+
     await flutterTts.awaitSpeakCompletion(true);
     await flutterTts.speak(article.content ?? "");
 
+    if (!shouldSpeak) return;
     setState(() {
       currentSection = SpeakingSection.none;
     });
@@ -146,6 +164,7 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
   }
 
   Future<void> ttsStop() async {
+    shouldSpeak = false;
     var result = await flutterTts.stop();
     if (result == 1) setState(() => isSpeaking = false);
   }
@@ -234,13 +253,61 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
                 /// Title
                 Padding(
                   padding: const EdgeInsets.all(20.0),
-                  child: Text(
-                    widget.article.title,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  child: RichText(
                     textAlign: TextAlign.center,
+                    text: TextSpan(
+                      children: currentSection == SpeakingSection.title
+                          ? <TextSpan>[
+                              TextSpan(
+                                text: start != 0
+                                    ? widget.article.title.substring(0, start)
+                                    : "",
+                                style: const TextStyle(
+                                  color: Color(0xFF090438),
+                                  fontSize: 27,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1.4,
+                                  height: 1.2,
+                                ),
+                              ),
+                              TextSpan(
+                                text:
+                                    widget.article.title.substring(start, end),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 27,
+                                  letterSpacing: 1.4,
+                                  fontWeight: FontWeight.w900,
+                                  height: 1.2,
+                                  background: Paint()
+                                    ..color =
+                                        _highlightColor.value ?? Colors.blue,
+                                ),
+                              ),
+                              TextSpan(
+                                text: widget.article.title.substring(end),
+                                style: const TextStyle(
+                                  fontSize: 27,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF090438),
+                                  height: 1.2,
+                                  letterSpacing: 1.4,
+                                ),
+                              ),
+                            ]
+                          : [
+                              TextSpan(
+                                text: widget.article.title,
+                                style: const TextStyle(
+                                  fontSize: 27,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF090438),
+                                  height: 1.2,
+                                  letterSpacing: 1.4,
+                                ),
+                              ),
+                            ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -248,6 +315,7 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
                 ///image
                 ShimmerImgPlaceholder(article: widget.article),
                 const SizedBox(height: 30),
+
                 /// Date and Source
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -262,6 +330,7 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
                   ),
                 ),
                 const SizedBox(height: 15),
+
                 ///content
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -275,42 +344,60 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
                         padding: const EdgeInsets.symmetric(
                             horizontal: 20.0, vertical: 10.0),
                         child: RichText(
-                          textAlign: TextAlign.left,
-                          text: TextSpan(children: <TextSpan>[
-                            TextSpan(
-                              text: widget.article.content != null && start != 0
-                                  ? widget.article.content!.substring(0, start)
-                                  : "",
-                              style: const TextStyle(
-                                color: Color(0xFF090438),
-                                fontSize: 24.0,
-                              ),
-                            ),
-                            if (currentSection == SpeakingSection.content)
-                            TextSpan(
-                                text: widget.article.content != null
-                                    ? widget.article.content!
-                                        .substring(start, end)
-                                    : "",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 24.0,
-                                  fontWeight: FontWeight.bold,
-                                  background: Paint()
-                                    ..color =
-                                        _highlightColor.value ?? Colors.blue,
-                                )),
-                            TextSpan(
-                                text: widget.article.content != null
-                                    ? widget.article.content!.substring(end)
-                                    : "",
-                                style: const TextStyle(
-                                  color: Color(0xFF090438),
-                                  fontSize: 24.0,
-                                  letterSpacing: 1.4,
-                                )),
-                          ]),
-                        )),
+                            textAlign: TextAlign.left,
+                            text: TextSpan(
+                                children: currentSection ==
+                                        SpeakingSection.content
+                                    ? <TextSpan>[
+                                        TextSpan(
+                                          text:
+                                              widget.article.content != null &&
+                                                      start != 0
+                                                  ? widget.article.content!
+                                                      .substring(0, start)
+                                                  : "",
+                                          style: const TextStyle(
+                                              color: Color(0xFF090438),
+                                              fontSize: 24.0,
+                                              letterSpacing: 1.4),
+                                        ),
+                                        TextSpan(
+                                            text: widget.article.content != null
+                                                ? widget.article.content!
+                                                    .substring(start, end)
+                                                : "",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 24.0,
+                                              fontWeight: FontWeight.bold,
+                                              background: Paint()
+                                                ..color =
+                                                    _highlightColor.value ??
+                                                        Colors.blue,
+                                            )),
+                                        TextSpan(
+                                            text: widget.article.content != null
+                                                ? widget.article.content!
+                                                    .substring(end)
+                                                : "",
+                                            style: const TextStyle(
+                                              color: Color(0xFF090438),
+                                              fontSize: 24.0,
+                                              letterSpacing: 1.4,
+                                            )),
+                                      ]
+                                    : [
+                                        TextSpan(
+                                          text: widget.article.content != null
+                                              ? widget.article.content!
+                                              : "",
+                                          style: const TextStyle(
+                                            color: Color(0xFF090438),
+                                            fontSize: 24.0,
+                                            letterSpacing: 1.4,
+                                          ),
+                                        )
+                                      ]))),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -318,32 +405,64 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
                   padding: const EdgeInsets.only(bottom: 16.0, right: 16.0),
                   child: Align(
                     alignment: Alignment.bottomCenter,
-                    child: ScaleTransition(
-                      scale: _quizButtonScale,
-                      child: IconButton(
-                        icon: Image.asset("assets/tech/quiz.png"),
-                        onPressed: () {
-                          _quizButtonController.stop(); // Stop animation when button is pressed
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  QuizScreen(article: widget.article),
+                    // child: ScaleTransition(
+                    //   scale: _quizButtonScale,
+                    child: AnimatedBuilder(
+                        animation: _quizButtonController,
+                        builder: (context, child) {
+                          // Animate the gradient shimmer effect
+                          return ShaderMask(
+                            shaderCallback: (bounds) {
+                              return LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Colors.white.withOpacity(0.2),
+                                  Colors.white.withOpacity(0.8),
+                                  Colors.white.withOpacity(0.2),
+                                ],
+                                stops: [
+                                  _quizButtonController.value - 0.3,
+                                  _quizButtonController.value,
+                                  _quizButtonController.value + 0.3,
+                                ],
+                              ).createShader(bounds);
+                            },
+                            blendMode: BlendMode.srcATop,
+                            child: IconButton(
+                              icon: Image.asset("assets/tech/quiz.png"),
+                              onPressed: () {
+                                _quizButtonController
+                                    .stop(); // Stop animation when button is pressed
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        QuizScreen(article: widget.article),
+                                  ),
+                                );
+                              },
                             ),
                           );
-                        },
-                      ),
-                    ),
+                        }),
                   ),
                 ),
               ],
             ),
           ),
+          const BottomNavbar(),
         ]),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          isSpeaking ? ttsStop() : ttsSpeakTitle(widget.article);
+          if (isSpeaking) {
+            ttsStop();
+          } else {
+            setState(() {
+              shouldSpeak = true; // Enable speaking
+            });
+            ttsSpeakTitle(widget.article);
+          }
         },
         backgroundColor: const Color(0xFF090438),
         child: Icon(
@@ -352,9 +471,29 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
           size: 40.0,
         ),
       ),
-      bottomNavigationBar: const BottomNavbar(),
+      // bottomNavigationBar: const BottomNavbar(),
     );
   }
 }
 
-//fix img size so shimmer placeholder is not visible from back
+//todo:
+//change imgs for background to show different categories
+//if you swipe right/left, category is changed
+//control font size irrespective of device settings.
+
+//use Ai to rephrase title to 12 words
+
+//after scroll then only bottom nav is visible.
+
+//highlight the title as well for tts.
+//pause after title.
+//fix the highlighting
+
+//while storing to database, add fav icon too. - if favicon present in cache alr, dont do.
+
+//male/female voices for tts? check different options.
+//how to get same across devices?
+
+//have to click stop listening 3 times to stop. why?
+
+//settle paddings on listTiles. make custom container instead of list tile.

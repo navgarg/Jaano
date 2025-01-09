@@ -1,7 +1,6 @@
 
 
-import 'package:cloud_firestore/cloud_firestore.dart' hide Source;
-import 'package:flutter/foundation.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import '../models/article_model.dart';
 import 'article_api_service.dart';
@@ -21,7 +20,7 @@ class FirestoreService {
     print(ref);
     DocumentSnapshot snapshot = await ref.doc(date).get();
     QuerySnapshot<Map<String, dynamic>> articleSnapshot =
-    await ref.doc(date).collection('arts').where("category", isEqualTo: cat.toString()).get();
+    await ref.doc(date).collection('arts').where("category", isEqualTo: cat.toString()).get(const GetOptions(source: Source.cache));
 
     print("get articles");
     print(snapshot.data());
@@ -40,16 +39,16 @@ class FirestoreService {
       for(var doc in articleSnapshot.docs){
         print("Processing article ID: ${doc.id}");
         QuerySnapshot<Map<String, dynamic>> sourceSnapshot =
-        await ref.doc(date).collection('arts').doc(doc.id).collection('source').get();
+        await ref.doc(date).collection('arts').doc(doc.id).collection('source').get(const GetOptions(source: Source.cache));
 
         QuerySnapshot<Map<String, dynamic>> questionSnapshot =
-        await ref.doc(date).collection('arts').doc(doc.id).collection('questions').get();
+        await ref.doc(date).collection('arts').doc(doc.id).collection('questions').get(const GetOptions(source: Source.cache));
 
-        List<Source> s = sourceSnapshot.docs.map((doc) => Source.fromFirestore(doc)).toList();
+        List<ArticleSource> s = sourceSnapshot.docs.map((doc) => ArticleSource.fromFirestore(doc)).toList();
         List<Question> ques = questionSnapshot.docs.map((doc) => Question.fromFirestore(doc)).toList();
 
         print(s);
-        Source source = s[0];
+        ArticleSource source = s[0];
 
         print(ques);
         articles.add(Article.fromFirestore(doc, source, ques));

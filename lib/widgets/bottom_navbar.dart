@@ -7,22 +7,31 @@ class BottomNavbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 100.0,
-      decoration: BoxDecoration(
-        color: Colors.grey.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      child: const Row(
-        children: [
-          Expanded(
-              flex: 2,
-              child: Text(
-                "243",
-                textAlign: TextAlign.center,
-              )),
-          Expanded(flex: 1, child: Text("124", textAlign: TextAlign.center)),
-        ],
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.1,
+        decoration: BoxDecoration(
+          color: Colors.grey.withOpacity(0.5),
+          // borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: const Row(
+          children: [
+            Expanded(
+                flex: 2,
+                child: Text(
+                  "243",
+                  textAlign: TextAlign.center,
+                )),
+            Expanded(
+                flex: 1,
+                child: Text(
+                    "124",
+                    textAlign: TextAlign.center
+                )
+            ),
+          ],
+        ),
       ),
     );
   }

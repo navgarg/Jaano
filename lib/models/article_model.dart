@@ -5,16 +5,16 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../services/claude_api_service.dart';
 
-class Source{
+class ArticleSource{
   String name;
   String? id;
 
-  Source({required this.id, required this.name});
+  ArticleSource({required this.id, required this.name});
 
-  factory Source.fromFirestore(DocumentSnapshot doc) {
+  factory ArticleSource.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
 
-    return Source(id: data['id'] ?? "", name: data['name'] ?? "");
+    return ArticleSource(id: data['id'] ?? "", name: data['name'] ?? "");
   }
 
   Map<String, dynamic> toMap() {
@@ -24,8 +24,8 @@ class Source{
     };
   }
 
-  factory Source.fromJson(Map<String, dynamic> json){
-    return Source(id: json["id"], name: json["name"]);
+  factory ArticleSource.fromJson(Map<String, dynamic> json){
+    return ArticleSource(id: json["id"], name: json["name"]);
   }
 }
 
@@ -62,7 +62,7 @@ enum Status {complete, incomplete}
 class Article {
   //record activity of user in every session
   List<Question>? questions;
-  Source source;
+  ArticleSource source;
   String? author;
   Categories category;
   // Status status;
@@ -88,7 +88,7 @@ class Article {
         required this.isCompleted,
       });
 
-  factory Article.fromFirestore (DocumentSnapshot<Map<String, dynamic>> art, Source source, List<Question> questions){
+  factory Article.fromFirestore (DocumentSnapshot<Map<String, dynamic>> art, ArticleSource source, List<Question> questions){
     final data = art.data()!;
     Categories cat;
     try{
@@ -144,7 +144,7 @@ class Article {
     print("run");
 
     return Article(
-        source: Source.fromJson(json['source']),
+        source: ArticleSource.fromJson(json['source']),
         author: json['author'],
         title: json['title'],
         description: json['description'],

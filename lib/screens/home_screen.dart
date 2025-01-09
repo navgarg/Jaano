@@ -58,10 +58,10 @@ class HomeScreen extends ConsumerWidget {
           ),
           Column(children: [
             const SizedBox(
-              height: 20.0,
+              height: 5.0,
             ),
             SizedBox(
-              height: 50.0,
+              height: MediaQuery.of(context).size.height * 0.05,
               width: double.infinity,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -103,10 +103,10 @@ class HomeScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 20.0),
+            const SizedBox(height: 10.0),
 
             SizedBox(
-              height: 100,
+              height: MediaQuery.of(context).size.height * 0.13,
               child: ListView.builder(
                 controller: scrollController,
                 scrollDirection: Axis.horizontal,
@@ -120,7 +120,7 @@ class HomeScreen extends ConsumerWidget {
                       ref.read(carouselIndexProvider.notifier).state = index;
 
                       // Scroll to the selected item
-                      final offset = index * MediaQuery.of(context).size.width * 0.28;
+                      final offset = index * MediaQuery.of(context).size.width * 0.24;
                       scrollController.animateTo(
                         offset,
                         duration: const Duration(milliseconds: 300),
@@ -128,31 +128,49 @@ class HomeScreen extends ConsumerWidget {
                       );
                     },
                     child: Container(
-                      width: MediaQuery.of(context).size.width * 0.28,
-                      margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                      width: MediaQuery.of(context).size.width * 0.24,
+                      margin: const EdgeInsets.symmetric(horizontal: 4.0), ///controls the spacing between successive elements in carousel
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
                         children: [
-                          CircleAvatar(
-                            radius: 25,
-                            backgroundColor: Colors.grey.shade200,
-                            child: ClipOval(
-                              child: Image.asset(
-                                image,
-                                fit: BoxFit.cover,
-                                width: 90,
-                                height: 90,
+                          Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              if (carouselIndex == index) // Add shadow only for selected item
+                                Container(
+                                  width: 58,
+                                  height: 58,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.25), // Shadow color
+                                        blurRadius: 4.0, // Softness of shadow
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              CircleAvatar(
+                                radius: 25,
+                                backgroundColor: Colors.grey.shade200,
+                                child: ClipOval(
+                                  child: Image.asset(
+                                    image,
+                                    fit: BoxFit.cover,
+                                    width: 80,
+                                    height: 80,
+                                  ),
+                                ),
                               ),
-                            ),
+                            ],
                           ),
                           const SizedBox(height: 8),
                           Text(
                             label,
                             style: TextStyle(
                               fontSize: 12,
-                              fontWeight: carouselIndex == index
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
+                              fontWeight:
+                              carouselIndex == index ? FontWeight.bold : FontWeight.normal,
                             ),
                           ),
                         ],
@@ -192,7 +210,7 @@ class HomeScreen extends ConsumerWidget {
                         return Column(
                           children: [
                             Container(
-                              height: 130.0,
+                              height: MediaQuery.of(context).size.height * 0.18,
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10.0),
@@ -201,7 +219,6 @@ class HomeScreen extends ConsumerWidget {
                               padding: const EdgeInsets.symmetric(
                                   vertical: 8.0, horizontal: 16.0),
                               child: ListTile(
-                                isThreeLine: false,
                                 leading: Image.asset('assets/circuit.png'),
                                 title: Text(
                                   article.title,
@@ -210,9 +227,11 @@ class HomeScreen extends ConsumerWidget {
                                     color: Colors.black,
                                     fontWeight: FontWeight.w500,
                                   ),
+                                  maxLines: 4,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                                 trailing: article.isCompleted 
-                                    ? const Icon(Icons.check_circle_outline, color: Colors.green)
+                                    ? const Icon(Icons.check_circle_outline)
                                     : const Icon(Icons.navigate_next_rounded), 
                                 onTap: () {
                                   Navigator.push(
@@ -238,9 +257,10 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
           ]),
+          const BottomNavbar(),
         ]),
       ),
-      bottomNavigationBar: const BottomNavbar(),
+      // bottomNavigationBar: const BottomNavbar(),
     );
   }
 }
@@ -251,8 +271,6 @@ class HomeScreen extends ConsumerWidget {
 //heights in percentages? for sized boxes
 
 //cache the imgs and stuff in shared preferences.
-//tts should read title and stuff too. audio prompt to play quiz.
-//quiz button can pulse when audio is played.
 //record voices for tts and send for options.
 //when reading stops unhighlight the word
 
@@ -267,7 +285,6 @@ class HomeScreen extends ConsumerWidget {
 
 //article read when tts completed.
 
-//is what tts speaking alright?
 //article points being added - animation? show something
 //bottom bar use elements not image.
 

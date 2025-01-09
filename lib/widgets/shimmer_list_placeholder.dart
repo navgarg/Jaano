@@ -15,7 +15,7 @@ class ShimmerPlaceholder extends StatelessWidget {
             baseColor: Colors.grey[300]!,
             highlightColor: Colors.grey[100]!,
             child: Container(
-              height: 130.0,
+              height: MediaQuery.of(context).size.height * 0.18,
               decoration: BoxDecoration(
                 color: Colors.grey,
                 borderRadius: BorderRadius.circular(10.0),
