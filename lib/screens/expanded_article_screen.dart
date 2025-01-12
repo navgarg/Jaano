@@ -10,14 +10,17 @@ import 'package:shimmer/shimmer.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
 import '../models/article_model.dart';
+import '../services/riverpod_providers.dart';
 
 class ExpandedArticleScreen extends StatefulWidget {
+  final ArticlesNotifier articlesNotifier;
   final int index;
   final Article article;
   const ExpandedArticleScreen({
     super.key,
     required this.article,
     required this.index,
+    required this.articlesNotifier
   });
 
   @override
@@ -39,7 +42,7 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
   late AnimationController _highlightController;
   late Animation<Color?> _highlightColor;
   late AnimationController _quizButtonController;
-  late Animation<double> _quizButtonScale;
+  // late Animation<double> _quizButtonScale;
 
   @override
   void initState() {
@@ -70,23 +73,7 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
       vsync: this,
     ); // Creates a pulsing effect
 
-    _quizButtonScale = Tween<double>(begin: 1.0, end: 1.2).animate(
-      CurvedAnimation(
-        parent: _quizButtonController,
-        curve: Curves.easeInOut,
-      ),
-    );
-
     ///initialise flutterTts event handlers
-    flutterTts.setCompletionHandler(() {
-      if (!shouldSpeak) return;
-      setState(() {
-        isSpeaking = false;
-        widget.article.isCompleted = true;
-        //todo: add animation for reading points.
-      });
-    });
-
     flutterTts.setErrorHandler((msg) {
       setState(() {
         isSpeaking = false;
@@ -95,6 +82,7 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
   }
 
   void promptQuiz() {
+    var categoryManager = CategoryManager();
     if (!shouldSpeak) return;
     setState(() {
       currentSection = SpeakingSection.quizPrompt;
@@ -106,6 +94,21 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
     setState(() {
       currentSection = SpeakingSection.none;
     });
+
+    flutterTts.setCompletionHandler(() {
+      if (!shouldSpeak) return;
+      setState(() {
+        isSpeaking = false;
+        widget.article.isCompleted = true;
+        print("Article completed");
+        print(widget.article.isCompleted);
+        print(widget.article.title);
+        categoryManager.addCompletedArticle(widget.article.category);
+        widget.articlesNotifier.completeArticle(widget.article);
+        //todo: add animation for reading points.
+      });
+    });
+
   }
 
   void ttsSpeakTitle(Article article) async {
@@ -125,8 +128,7 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
 
     await flutterTts.awaitSpeakCompletion(true);
     await flutterTts.speak(article.title);
-    //"Published by ${article.source.name} "
-    //         "on ${DateFormat("d MMMM yyyy").format(DateTime.parse(article.publishedAt!))}"
+
     if (!shouldSpeak) return;
     setState(() {
       currentSection = SpeakingSection.none;
@@ -134,6 +136,14 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
 
     start = 0;
     end = 0;
+
+    await Future.delayed(const Duration(milliseconds: 500));
+    await flutterTts.speak("Published by ${article.source.name} "
+        "on ${DateFormat("d MMMM yyyy").format(DateTime.parse(article.publishedAt!))}");
+
+    start = 0;
+    end = 0;
+
     ttsSpeak(article);
   }
 
@@ -485,15 +495,9 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
 
 //after scroll then only bottom nav is visible.
 
-//highlight the title as well for tts.
-//pause after title.
-//fix the highlighting
-
 //while storing to database, add fav icon too. - if favicon present in cache alr, dont do.
 
 //male/female voices for tts? check different options.
 //how to get same across devices?
-
-//have to click stop listening 3 times to stop. why?
 
 //settle paddings on listTiles. make custom container instead of list tile.

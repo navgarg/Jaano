@@ -7,6 +7,7 @@ import 'package:jaano/screens/expanded_article_screen.dart';
 import 'package:jaano/widgets/bottom_navbar.dart';
 
 import '../constants.dart';
+import '../models/article_model.dart';
 import '../services/riverpod_providers.dart';
 import '../widgets/shimmer_list_placeholder.dart';
 
@@ -14,36 +15,54 @@ import '../widgets/shimmer_list_placeholder.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
-//todo:
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    var categoryManager = CategoryManager();
+
     /// Watch providers
     final carouselIndex = ref.watch(carouselIndexProvider);
-    final articlesAsync = ref.watch(articlesProvider);
+    // final articles = ref.watch(articlesProvider);
+    final articlesNotifier = ref.read(articlesProvider.notifier);
+    final articlesState = ref.watch(articlesProvider);
     final expandedPanels = ref.watch(expandedPanelsProvider);
+    // final articleCompleted = ref.watch(articleCompletionProvider);
+
+    /// Ensure articles are fetched when the widget is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      print('addPostFrameCallback: articlesState = $articlesState');
+
+      /// Avoid re-fetching if the articles are already loaded
+      // if (articlesState.isLoading || articlesState is AsyncData) return;
+      if (articlesState is AsyncData) return;
+
+      /// Fetch articles if not already loaded
+      print('Before fetch: $articlesState');
+      articlesNotifier.fetchArticles(categories[carouselIndex]);
+      print('After fetch: $articlesState');
+    });
+
+    ref.listen<int>(carouselIndexProvider, (previousIndex, newIndex) {
+      articlesNotifier.fetchArticles(categories[newIndex]);
+    });
+
+    String _getCategoryIcon(int index, WidgetRef ref) {
+      final categoryManager = CategoryManager();
+      final completionStatus = categoryManager.completionStatus(
+          categories[index]);
+      if (completionStatus == 0) return catIcons0[index];
+      if (completionStatus == 1) return catIcons1[index];
+      if (completionStatus == 2) return catIcons2[index];
+      return catIcons3[index];
+    }
 
     final scrollController = ScrollController(
       initialScrollOffset:
-          carouselIndex * MediaQuery.of(context).size.width * 0.28,
+      carouselIndex * MediaQuery
+          .of(context)
+          .size
+          .width * 0.28,
     );
-
-    final List<String> bgImgs = [
-      "assets/economy/eco_bg.png",
-      "assets/nature/nat_bg.png",
-      "assets/food/food_bg.png",
-      "assets/science/sci_bg.png",
-      "assets/sports/sport_bg.png",
-      "assets/tech/tech_bg.png"
-    ];
-
-    final images = [
-      "assets/economy/eco_3.png",
-      "assets/nature/nat_3.png",
-      "assets/food/food_3.png",
-      "assets/science/sci_3.png",
-      "assets/sports/sport_3.png",
-      "assets/tech/tech_3.png"
-    ];
 
     return Scaffold(
       body: SafeArea(
@@ -61,7 +80,10 @@ class HomeScreen extends ConsumerWidget {
               height: 5.0,
             ),
             SizedBox(
-              height: MediaQuery.of(context).size.height * 0.05,
+              height: MediaQuery
+                  .of(context)
+                  .size
+                  .height * 0.05,
               width: double.infinity,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -104,23 +126,47 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 10.0),
-
             SizedBox(
-              height: MediaQuery.of(context).size.height * 0.13,
+              height: MediaQuery
+                  .of(context)
+                  .size
+                  .height * 0.13,
               child: ListView.builder(
                 controller: scrollController,
                 scrollDirection: Axis.horizontal,
                 itemCount: labels.length,
                 itemBuilder: (context, index) {
                   final label = labels[index];
-                  final image = images[index];
+                  // final String image;
+                  // if (categoryManager.completionStatus(categories[index]) ==
+                  //     0) {
+                  //   image = catIcons0[index];
+                  // } else if (categoryManager
+                  //         .completionStatus(categories[index]) ==
+                  //     1) {
+                  //   image = catIcons1[index];
+                  // } else if (categoryManager
+                  //         .completionStatus(categories[index]) ==
+                  //     2) {
+                  //   image = catIcons2[index];
+                  // } else {
+                  //   image = catIcons3[index];
+                  // }
+                  final image = _getCategoryIcon(index, ref);
 
                   return GestureDetector(
                     onTap: () {
-                      ref.read(carouselIndexProvider.notifier).state = index;
+                      ref
+                          .read(carouselIndexProvider.notifier)
+                          .state = index;
+                      // articlesNotifier.fetchArticles(categories[carouselIndex]);
 
                       // Scroll to the selected item
-                      final offset = index * MediaQuery.of(context).size.width * 0.24;
+                      final offset =
+                          index * MediaQuery
+                              .of(context)
+                              .size
+                              .width * 0.24;
                       scrollController.animateTo(
                         offset,
                         duration: const Duration(milliseconds: 300),
@@ -128,15 +174,21 @@ class HomeScreen extends ConsumerWidget {
                       );
                     },
                     child: Container(
-                      width: MediaQuery.of(context).size.width * 0.24,
-                      margin: const EdgeInsets.symmetric(horizontal: 4.0), ///controls the spacing between successive elements in carousel
+                      width: MediaQuery
+                          .of(context)
+                          .size
+                          .width * 0.24,
+                      margin: const EdgeInsets.symmetric(horizontal: 4.0),
+
+                      ///controls the spacing between successive elements in carousel
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
                         children: [
                           Stack(
                             alignment: Alignment.center,
                             children: [
-                              if (carouselIndex == index) // Add shadow only for selected item
+                              if (carouselIndex ==
+                                  index) // Add shadow only for selected item
                                 Container(
                                   width: 58,
                                   height: 58,
@@ -144,7 +196,8 @@ class HomeScreen extends ConsumerWidget {
                                     shape: BoxShape.circle,
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.black.withOpacity(0.25), // Shadow color
+                                        color: Colors.black
+                                            .withOpacity(0.25), // Shadow color
                                         blurRadius: 4.0, // Softness of shadow
                                       ),
                                     ],
@@ -169,8 +222,9 @@ class HomeScreen extends ConsumerWidget {
                             label,
                             style: TextStyle(
                               fontSize: 12,
-                              fontWeight:
-                              carouselIndex == index ? FontWeight.bold : FontWeight.normal,
+                              fontWeight: carouselIndex == index
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
                             ),
                           ),
                         ],
@@ -180,9 +234,8 @@ class HomeScreen extends ConsumerWidget {
                 },
               ),
             ),
-
             Expanded(
-              child: articlesAsync.when(
+              child: articlesState.when(
                 data: (articles) {
                   if (articles.isEmpty) {
                     return const Center(
@@ -190,6 +243,7 @@ class HomeScreen extends ConsumerWidget {
                     );
                   }
 
+                  /// Initialize expanded panels
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     if (expandedPanels.isEmpty ||
                         expandedPanels.length != articles.length) {
@@ -210,7 +264,11 @@ class HomeScreen extends ConsumerWidget {
                         return Column(
                           children: [
                             Container(
-                              height: MediaQuery.of(context).size.height * 0.18,
+                              height:
+                              MediaQuery
+                                  .of(context)
+                                  .size
+                                  .height * 0.18,
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10.0),
@@ -230,16 +288,19 @@ class HomeScreen extends ConsumerWidget {
                                   maxLines: 4,
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                                trailing: article.isCompleted 
+                                trailing: article.isCompleted
                                     ? const Icon(Icons.check_circle_outline)
-                                    : const Icon(Icons.navigate_next_rounded), 
+                                    : const Icon(Icons.navigate_next_rounded),
                                 onTap: () {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
                                               ExpandedArticleScreen(
-                                                  article: article, index: carouselIndex,)));
+                                                article: article,
+                                                articlesNotifier: articlesNotifier,
+                                                index: carouselIndex,
+                                              )));
                                 },
                               ),
                             ),
@@ -252,27 +313,23 @@ class HomeScreen extends ConsumerWidget {
                   );
                 },
                 loading: () =>
-                    const ShimmerPlaceholder(), // Use shimmer during loading
+                const ShimmerPlaceholder(), // Use shimmer during loading
                 error: (e, _) => Center(child: Text('Error: $e')),
               ),
             ),
-          ]),
+          ],
+          ),
           const BottomNavbar(),
-        ]),
+        ],
+        ),
       ),
-      // bottomNavigationBar: const BottomNavbar(),
     );
+
   }
 }
-
 //on start listening, make overlay and mic animation.
 
-//shared preference implement on first open (on bg?)
-//heights in percentages? for sized boxes
-
 //cache the imgs and stuff in shared preferences.
-//record voices for tts and send for options.
-//when reading stops unhighlight the word
 
 //greyed and locked icons for other categories.
 //other categories unlocked only by completing the prev category.
@@ -281,7 +338,6 @@ class HomeScreen extends ConsumerWidget {
 //shadow to highlight the category selected
 
 //animation for smooth transition from non expanded view to expanded view.
-
 
 //article read when tts completed.
 

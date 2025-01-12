@@ -1,6 +1,8 @@
 import 'dart:core';
 import 'package:flutter/material.dart';
 
+import 'models/article_model.dart';
+
 class KColors {
   static const Color blue = Color(0xFF2977F5);
   static const Color primaryText = Color(0xFF456484);
@@ -33,5 +35,53 @@ final List<int> bgColors = [
   ///tech
   0xFFCFC4FF,
 ];
+final List<String> bgImgs = [
+  "assets/economy/eco_bg.png",
+  "assets/nature/nat_bg.png",
+  "assets/food/food_bg.png",
+  "assets/science/sci_bg.png",
+  "assets/sports/sport_bg.png",
+  "assets/tech/tech_bg.png"
+];
+final catIcons0 = [
+  "assets/economy/eco_3.png",
+  "assets/nature/nat_3.png",
+  "assets/food/food_3.png",
+  "assets/science/sci_3.png",
+  "assets/sports/sport_3.png",
+  "assets/tech/tech_3.png"
+];
+final catIcons3 = [
+  "assets/economy/eco_3.png",
+  "assets/nature/nat_3.png",
+  "assets/food/food_3.png",
+  "assets/science/sci_3.png",
+  "assets/sports/sport_3.png",
+  "assets/tech/tech_3.png"
+];
+final catIcons2 = [
+  "assets/economy/eco_2.png",
+  "assets/nature/nat_2.png",
+  "assets/food/food_2.png",
+  "assets/science/sci_2.png",
+  "assets/sports/sport_2.png",
+  "assets/tech/tech_2.png"
+];
+final catIcons1 = [
+  "assets/economy/eco_1.png",
+  "assets/nature/nat_1.png",
+  "assets/food/food_1.png",
+  "assets/science/sci_1.png",
+  "assets/sports/sport_1.png",
+  "assets/tech/tech_1.png"
+];
 
 final labels = ["Economy", "Nature", "Food", "Science", "Sports", "Tech"];
+final categories = [
+  Categories.economy,
+  Categories.nature,
+  Categories.food,
+  Categories.science,
+  Categories.sports,
+  Categories.technology
+];

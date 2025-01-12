@@ -53,11 +53,26 @@ class Question{
   }
 }
 ///predefined categories, to avoid confusion with strings
-// currently using ent, tech, sci, edu, sports, tourism
-enum Categories {economy, technology, sports, science, food, nature, other
+enum Categories {economy, technology, sports, science, food, nature, other;
 }
 
-enum Status {complete, incomplete}
+class CategoryManager {
+  final Map<Categories, int> _completionStatus = {
+    for (var category in Categories.values) category: 0,
+  };
+
+  void addCompletedArticle(Categories category) {
+    _completionStatus[category] = _completionStatus[category] != null ? _completionStatus[category]! + 1 : 1;
+  }
+
+  int? completionStatus(Categories category) {
+    return _completionStatus[category];
+  }
+
+  void resetCompletion(Categories category) {
+    _completionStatus[category] = 0;
+  }
+}
 
 class Article {
   //record activity of user in every session
@@ -65,7 +80,6 @@ class Article {
   ArticleSource source;
   String? author;
   Categories category;
-  // Status status;
   String title;
   String? description;
   String? url;
