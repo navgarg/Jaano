@@ -16,12 +16,11 @@ class ExpandedArticleScreen extends StatefulWidget {
   final ArticlesNotifier articlesNotifier;
   final int index;
   final Article article;
-  const ExpandedArticleScreen({
-    super.key,
-    required this.article,
-    required this.index,
-    required this.articlesNotifier
-  });
+  const ExpandedArticleScreen(
+      {super.key,
+      required this.article,
+      required this.index,
+      required this.articlesNotifier});
 
   @override
   State<ExpandedArticleScreen> createState() => _ExpandedArticleScreenState();
@@ -39,6 +38,10 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
   int start = 0;
   int end = 0;
 
+  final ScrollController _scrollController = ScrollController();
+  // bool _isBottomBarVisible = false;
+  double _bottomBarOffset = 1.0;
+
   late AnimationController _highlightController;
   late Animation<Color?> _highlightColor;
   late AnimationController _quizButtonController;
@@ -46,7 +49,40 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
 
   @override
   void initState() {
+    print("innit state called");
     super.initState();
+    // _scrollController.addListener(() {
+    //   print("added listener");
+    //   // print("Scroll Position: ${_scrollController.position.pixels}");
+    //   final isAtBottom = _scrollController.position.pixels >=
+    //       _scrollController.position.maxScrollExtent;
+    //
+    //   if (isAtBottom && !_isBottomBarVisible) {
+    //     if (!mounted) return;
+    //     setState(() {
+    //       print("bottom bar visible");
+    //       _isBottomBarVisible = true;
+    //     });
+    //   } else if (!isAtBottom && _isBottomBarVisible) {
+    //     if (!mounted) return;
+    //     setState(() {
+    //       print("bottom bar invisible");
+    //       _isBottomBarVisible = false;
+    //     });
+    //   }
+    // });
+    _scrollController.addListener(() {
+      final maxExtent = _scrollController.position.maxScrollExtent;
+      final currentOffset = _scrollController.offset;
+
+      if (maxExtent > 0) {
+        // Calculate the visibility offset based on scroll position
+        setState(() {
+          _bottomBarOffset = 1.0 - (currentOffset / maxExtent).clamp(0.0, 1.0);
+        });
+      }
+    });
+
     flutterTts.setLanguage(
         'en-US'); //todo: set language after getting from device (?)
     flutterTts.setPitch(1.0);
@@ -108,7 +144,6 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
         //todo: add animation for reading points.
       });
     });
-
   }
 
   void ttsSpeakTitle(Article article) async {
@@ -182,6 +217,7 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
   @override
   void dispose() {
     flutterTts.stop();
+    _scrollController.dispose();
 
     /// Stops speech when the widget is disposed
     _highlightController.dispose();
@@ -196,15 +232,16 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
       body: SafeArea(
         child: Stack(children: <Widget>[
           Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage(
-                    "assets/tech/tech_expanded_bg.png"), //todo: update bg img
+                image:
+                    AssetImage(expdBgImgs[widget.index]), //todo: update bg img
                 fit: BoxFit.cover,
               ),
             ),
           ),
           SingleChildScrollView(
+            controller: _scrollController,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -346,8 +383,10 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Container(
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                          colors: [Color(0xFF9585D2), Color(0xFF9585D2)]),
+                      gradient: LinearGradient(colors: [
+                        Color(bgColors[widget.index]),
+                        Color(bgColors[widget.index])
+                      ]),
                       borderRadius: BorderRadius.circular(10.0),
                     ),
                     child: Padding(
@@ -440,7 +479,9 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
                             },
                             blendMode: BlendMode.srcATop,
                             child: IconButton(
-                              icon: Image.asset("assets/tech/quiz.png"),
+                              icon: Image.asset(
+                                quizIcons[widget.index],
+                              ),
                               onPressed: () {
                                 _quizButtonController
                                     .stop(); // Stop animation when button is pressed
@@ -457,10 +498,25 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
                         }),
                   ),
                 ),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.10),
               ],
             ),
           ),
-          const BottomNavbar(),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: AnimatedSlide(
+              offset: Offset(0, _bottomBarOffset),
+              duration: const Duration(milliseconds: 200), // Smooth sliding
+              curve: Curves.easeInOut,
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child:
+                    SafeArea(child: BottomNavbar(carouselIndex: widget.index)),
+              ),
+            ),
+          )
         ]),
       ),
       floatingActionButton: FloatingActionButton(
@@ -481,6 +537,7 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
           size: 40.0,
         ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       // bottomNavigationBar: const BottomNavbar(),
     );
   }
@@ -499,5 +556,3 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
 
 //male/female voices for tts? check different options.
 //how to get same across devices?
-
-//settle paddings on listTiles. make custom container instead of list tile.

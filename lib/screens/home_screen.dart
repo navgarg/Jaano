@@ -5,6 +5,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:intl/intl.dart';
 import 'package:jaano/screens/expanded_article_screen.dart';
 import 'package:jaano/widgets/bottom_navbar.dart';
+import 'package:jaano/widgets/list_tile.dart';
 
 import '../constants.dart';
 import '../models/article_model.dart';
@@ -18,8 +19,6 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    var categoryManager = CategoryManager();
-
     /// Watch providers
     final carouselIndex = ref.watch(carouselIndexProvider);
     // final articles = ref.watch(articlesProvider);
@@ -33,7 +32,6 @@ class HomeScreen extends ConsumerWidget {
       print('addPostFrameCallback: articlesState = $articlesState');
 
       /// Avoid re-fetching if the articles are already loaded
-      // if (articlesState.isLoading || articlesState is AsyncData) return;
       if (articlesState is AsyncData) return;
 
       /// Fetch articles if not already loaded
@@ -42,14 +40,14 @@ class HomeScreen extends ConsumerWidget {
       print('After fetch: $articlesState');
     });
 
+    ///re-fetch articles everytime category is changed
     ref.listen<int>(carouselIndexProvider, (previousIndex, newIndex) {
       articlesNotifier.fetchArticles(categories[newIndex]);
     });
 
     String _getCategoryIcon(int index, WidgetRef ref) {
       final categoryManager = CategoryManager();
-      final completionStatus = categoryManager.completionStatus(
-          categories[index]);
+      final completionStatus = categoryManager.completionStatus(categories[index]);
       if (completionStatus == 0) return catIcons0[index];
       if (completionStatus == 1) return catIcons1[index];
       if (completionStatus == 2) return catIcons2[index];
@@ -70,7 +68,7 @@ class HomeScreen extends ConsumerWidget {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage(bgImgs[carouselIndex]),
+                image: AssetImage(homeBgImgs[carouselIndex]),
                 fit: BoxFit.cover,
               ),
             ),
@@ -263,47 +261,48 @@ class HomeScreen extends ConsumerWidget {
 
                         return Column(
                           children: [
-                            Container(
-                              height:
-                              MediaQuery
-                                  .of(context)
-                                  .size
-                                  .height * 0.18,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: Color(bgColors[carouselIndex]),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 8.0, horizontal: 16.0),
-                              child: ListTile(
-                                leading: Image.asset('assets/circuit.png'),
-                                title: Text(
-                                  article.title,
-                                  style: const TextStyle(
-                                    fontSize: 16.0,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  maxLines: 4,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                trailing: article.isCompleted
-                                    ? const Icon(Icons.check_circle_outline)
-                                    : const Icon(Icons.navigate_next_rounded),
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              ExpandedArticleScreen(
-                                                article: article,
-                                                articlesNotifier: articlesNotifier,
-                                                index: carouselIndex,
-                                              )));
-                                },
-                              ),
-                            ),
+                            // Container(
+                            //   height:
+                            //   MediaQuery
+                            //       .of(context)
+                            //       .size
+                            //       .height * 0.18,
+                            //   alignment: Alignment.center,
+                            //   decoration: BoxDecoration(
+                            //     borderRadius: BorderRadius.circular(10.0),
+                            //     color: Color(bgColors[carouselIndex]),
+                            //   ),
+                            //   padding: const EdgeInsets.symmetric(
+                            //       vertical: 8.0, horizontal: 16.0),
+                            //   child: ListTile(
+                            //     leading: Image.asset('assets/circuit.png'),
+                            //     title: Text(
+                            //       article.title,
+                            //       style: const TextStyle(
+                            //         fontSize: 16.0,
+                            //         color: Colors.black,
+                            //         fontWeight: FontWeight.w500,
+                            //       ),
+                            //       maxLines: 4,
+                            //       overflow: TextOverflow.ellipsis,
+                            //     ),
+                            //     trailing: article.isCompleted
+                            //         ? const Icon(Icons.check_circle_outline)
+                            //         : const Icon(Icons.navigate_next_rounded),
+                            //     onTap: () {
+                            //       Navigator.push(
+                            //           context,
+                            //           MaterialPageRoute(
+                            //               builder: (context) =>
+                            //                   ExpandedArticleScreen(
+                            //                     article: article,
+                            //                     articlesNotifier: articlesNotifier,
+                            //                     index: carouselIndex,
+                            //                   )));
+                            //     },
+                            //   ),
+                            // ),
+                            CustomListTile(article: article, carouselIndex: carouselIndex, articlesNotifier: articlesNotifier),
                             // Add spacing below each panel
                             const SizedBox(height: 16.0),
                           ],
@@ -319,7 +318,7 @@ class HomeScreen extends ConsumerWidget {
             ),
           ],
           ),
-          const BottomNavbar(),
+          BottomNavbar(carouselIndex: carouselIndex,),
         ],
         ),
       ),
@@ -338,8 +337,6 @@ class HomeScreen extends ConsumerWidget {
 //shadow to highlight the category selected
 
 //animation for smooth transition from non expanded view to expanded view.
-
-//article read when tts completed.
 
 //article points being added - animation? show something
 //bottom bar use elements not image.

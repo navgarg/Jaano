@@ -19,29 +19,32 @@ const String newsUrl = "/navgarg/Loose-Files/master/jaano_newsdata.json";
 final List<int> bgColors = [
   ///economy background color
   0xFF3EB99C,
-
   ///nature
   0xFFAFE4A8,
-
   ///food
   0xFFFEC863,
-
   ///science
   0xFF7EBBF1,
-
   ///sports
   0xFFEA9D9E,
-
   ///tech
   0xFFCFC4FF,
 ];
-final List<String> bgImgs = [
+final List<String> homeBgImgs = [
   "assets/economy/eco_bg.png",
   "assets/nature/nat_bg.png",
   "assets/food/food_bg.png",
   "assets/science/sci_bg.png",
   "assets/sports/sport_bg.png",
   "assets/tech/tech_bg.png"
+];
+final List<String> expdBgImgs = [
+  "assets/economy/eco_expanded_bg.png",
+  "assets/nature/nat_expanded_bg.png",
+  "assets/food/food_expanded_bg.png",
+  "assets/science/sci_expanded_bg.png",
+  "assets/sports/sport_expanded_bg.png",
+  "assets/tech/tech_expanded_bg.png"
 ];
 final catIcons0 = [
   "assets/economy/eco_3.png",
@@ -75,7 +78,30 @@ final catIcons1 = [
   "assets/sports/sport_1.png",
   "assets/tech/tech_1.png"
 ];
-
+final List<String> quizIcons = [
+  "assets/economy/eco_quiz.png",
+  "assets/nature/nat_quiz.png",
+  "assets/food/food_quiz.png",
+  "assets/science/sci_quiz.png",
+  "assets/sports/sport_quiz.png",
+  "assets/tech/tech_quiz.png"
+];
+final List<String> diamondIcons = [
+  "assets/economy/eco_diamond.png",
+  "assets/nature/nat_diamond.png",
+  "assets/food/food_diamond.png",
+  "assets/science/sci_diamond.png",
+  "assets/sports/sport_diamond.png",
+  "assets/tech/tech_diamond.png"
+];
+final List<String> qpIcons = [
+  "assets/economy/eco_qp.png",
+  "assets/nature/nat_qp.png",
+  "assets/food/food_qp.png",
+  "assets/science/sci_qp.png",
+  "assets/sports/sport_qp.png",
+  "assets/tech/tech_qp.png"
+];
 final labels = ["Economy", "Nature", "Food", "Science", "Sports", "Tech"];
 final categories = [
   Categories.economy,
