@@ -3,6 +3,7 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:intl/intl.dart';
 import 'package:jaano/constants.dart';
 import 'package:jaano/screens/home_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jaano/screens/quiz_screen.dart';
 import 'package:jaano/widgets/bottom_navbar.dart';
 import 'package:jaano/widgets/shimmer_img_placeholder.dart';
@@ -12,7 +13,7 @@ import 'package:speech_to_text/speech_to_text.dart';
 import '../models/article_model.dart';
 import '../services/riverpod_providers.dart';
 
-class ExpandedArticleScreen extends StatefulWidget {
+class ExpandedArticleScreen extends ConsumerStatefulWidget {
   final ArticlesNotifier articlesNotifier;
   final int index;
   final Article article;
@@ -23,14 +24,14 @@ class ExpandedArticleScreen extends StatefulWidget {
       required this.articlesNotifier});
 
   @override
-  State<ExpandedArticleScreen> createState() => _ExpandedArticleScreenState();
+  ConsumerState<ExpandedArticleScreen> createState() => _ExpandedArticleScreenState();
 }
 
 enum SpeakingSection { none, title, content, quizPrompt }
 
 SpeakingSection currentSection = SpeakingSection.none;
 
-class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
+class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
     with TickerProviderStateMixin {
   final FlutterTts flutterTts = FlutterTts();
   bool isSpeaking = false;
@@ -51,26 +52,7 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
   void initState() {
     print("innit state called");
     super.initState();
-    // _scrollController.addListener(() {
-    //   print("added listener");
-    //   // print("Scroll Position: ${_scrollController.position.pixels}");
-    //   final isAtBottom = _scrollController.position.pixels >=
-    //       _scrollController.position.maxScrollExtent;
-    //
-    //   if (isAtBottom && !_isBottomBarVisible) {
-    //     if (!mounted) return;
-    //     setState(() {
-    //       print("bottom bar visible");
-    //       _isBottomBarVisible = true;
-    //     });
-    //   } else if (!isAtBottom && _isBottomBarVisible) {
-    //     if (!mounted) return;
-    //     setState(() {
-    //       print("bottom bar invisible");
-    //       _isBottomBarVisible = false;
-    //     });
-    //   }
-    // });
+
     _scrollController.addListener(() {
       final maxExtent = _scrollController.position.maxScrollExtent;
       final currentOffset = _scrollController.offset;
@@ -142,6 +124,7 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
         categoryManager.addCompletedArticle(widget.article.category);
         widget.articlesNotifier.completeArticle(widget.article);
         //todo: add animation for reading points.
+
       });
     });
   }
@@ -204,6 +187,9 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
     setState(() {
       currentSection = SpeakingSection.none;
     });
+
+    /// Add points after reading completion
+    ref.read(readingPointsProvider.notifier).addPoints(50);
 
     promptQuiz();
   }
@@ -549,8 +535,6 @@ class _ExpandedArticleScreenState extends State<ExpandedArticleScreen>
 //control font size irrespective of device settings.
 
 //use Ai to rephrase title to 12 words
-
-//after scroll then only bottom nav is visible.
 
 //while storing to database, add fav icon too. - if favicon present in cache alr, dont do.
 

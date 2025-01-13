@@ -6,7 +6,7 @@ import 'package:speech_to_text/speech_to_text.dart';
 
 import '../models/article_model.dart';
 
-class QuizScreen extends ConsumerWidget {
+class QuizScreen extends ConsumerStatefulWidget {
   final Article article;
 
   const QuizScreen({
@@ -14,7 +14,18 @@ class QuizScreen extends ConsumerWidget {
     required this.article,
   });
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<QuizScreen> createState() => _QuizScreen();
+}
+
+class _QuizScreen extends ConsumerState<QuizScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Initialize speech when the widget is built
+    Future.microtask(() => ref.read(speechStateProvider.notifier).initSpeech());
+  }
+  @override
+  Widget build(BuildContext context) {
     print("in build for quiz");
     final currQues = ref.watch(questionIndexProvider);
     final speechState = ref.watch(speechStateProvider);
@@ -85,7 +96,7 @@ class QuizScreen extends ConsumerWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Image.network(
-                    article.urlToImage.toString(),
+                    widget.article.urlToImage.toString(),
                     loadingBuilder: (context, child, loadingProgress) {
                       if (loadingProgress == null) {
                         return child; // Show the image once it's loaded
@@ -112,7 +123,7 @@ class QuizScreen extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Text(
-                  article.questions?[currQues-1].question.toString() ?? " ",
+                  widget.article.questions?[currQues-1].question.toString() ?? " ",
                   style: const TextStyle(fontSize: 16),
                   textAlign: TextAlign.justify,
                 ),
@@ -158,7 +169,7 @@ class QuizScreen extends ConsumerWidget {
                   child: TextButton(
                     onPressed: () {
                       speechState.isListening
-                          ? speechNotifier.stopListening(article)
+                          ? speechNotifier.stopListening(widget.article)
                           : speechNotifier.startListening();
                     },
                     child: Text(

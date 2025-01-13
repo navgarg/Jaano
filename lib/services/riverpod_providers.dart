@@ -106,3 +106,48 @@ final speechToTextProvider = Provider<SpeechToText>((ref) => SpeechToText());
 final speechStateProvider = StateNotifierProvider<SpeechStateNotifier, SpeechState>(
       (ref) => SpeechStateNotifier(ref),
 );
+
+class ReadingPointsState {
+  final int totalPoints;
+  final int addedPoints;
+  final bool isAnimating;
+
+  ReadingPointsState({
+    required this.totalPoints,
+    this.addedPoints = 0,
+    this.isAnimating = false,
+  });
+
+  ReadingPointsState copyWith({
+    int? totalPoints,
+    int? addedPoints,
+    bool? isAnimating,
+  }) {
+    return ReadingPointsState(
+      totalPoints: totalPoints ?? this.totalPoints,
+      addedPoints: addedPoints ?? this.addedPoints,
+      isAnimating: isAnimating ?? this.isAnimating,
+    );
+  }
+}
+
+class ReadingPointsNotifier extends StateNotifier<ReadingPointsState> {
+  ReadingPointsNotifier() : super(ReadingPointsState(totalPoints: 0));
+
+  void addPoints(int points) {
+    state = state.copyWith(addedPoints: points, isAnimating: true);
+
+    // Simulate a delay for animation, then update total points
+    Future.delayed(const Duration(seconds: 2), () {
+      state = state.copyWith(
+        totalPoints: state.totalPoints + points,
+        addedPoints: 0,
+        isAnimating: false,
+      );
+    });
+  }
+}
+
+final readingPointsProvider = StateNotifierProvider<ReadingPointsNotifier, ReadingPointsState>((ref) {
+  return ReadingPointsNotifier();
+});

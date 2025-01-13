@@ -339,5 +339,4 @@ class HomeScreen extends ConsumerWidget {
 //animation for smooth transition from non expanded view to expanded view.
 
 //article points being added - animation? show something
-//bottom bar use elements not image.
 
