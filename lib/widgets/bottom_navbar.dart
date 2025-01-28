@@ -44,17 +44,29 @@ class BottomNavbar extends ConsumerWidget {
 
                 // Profile Icon (centered)
                 Center(
-                  child: CircleAvatar(
-                    radius: 40,
-                    backgroundColor: Colors.white,
-                    child: Icon(Icons.person, size: 40, color: Color(bgColors[carouselIndex])),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black
+                              .withOpacity(0.5), // Shadow color
+                          blurRadius: 8.0, // Softness of shadow
+                        ),
+                      ],
+                    ),
+                    child: CircleAvatar(
+                      radius: 40,
+                      backgroundColor: Colors.white,
+                      child: Icon(Icons.person, size: 40, color: Color(bgColors[carouselIndex])),
+                    ),
                   ),
                 ),
 
                 // Right points container
                 PointsContainer(
                   icon: qpIcons[carouselIndex],
-                  points: 300, // Static value for now
+                  points: 1234567, // Static value for now
                   backgroundColor: Color(bgColors[carouselIndex]),
                 ),
               ],

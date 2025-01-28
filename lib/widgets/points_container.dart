@@ -18,6 +18,10 @@ class PointsContainer extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       decoration: BoxDecoration(
         color: backgroundColor,
+        border: Border.all(
+          color: Colors.black, // Border color
+          width: 1.0, // Border width
+        ),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -30,7 +34,10 @@ class PointsContainer extends StatelessWidget {
             builder: (context, value, child) {
               return Text(
                 '$value',
-                style: const TextStyle(color: Colors.white),
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                ),
               );
             },
           ),

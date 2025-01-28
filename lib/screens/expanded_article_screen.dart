@@ -24,9 +24,11 @@ class ExpandedArticleScreen extends ConsumerStatefulWidget {
       required this.articlesNotifier});
 
   @override
-  ConsumerState<ExpandedArticleScreen> createState() => _ExpandedArticleScreenState();
+  ConsumerState<ExpandedArticleScreen> createState() =>
+      _ExpandedArticleScreenState();
 }
 
+///enum to specify the section of the article being spoken
 enum SpeakingSection { none, title, content, quizPrompt }
 
 SpeakingSection currentSection = SpeakingSection.none;
@@ -74,6 +76,7 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
         isSpeaking = true;
       });
     });
+    _loadVoices();
 
     ///initialise the controller for highlighting article content being spoken
     _highlightController = AnimationController(
@@ -97,6 +100,15 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
         isSpeaking = false;
       });
     });
+  }
+
+  Future<void> _loadVoices() async {
+    try {
+      final List<dynamic> availableVoices = await flutterTts.getVoices;
+      print("Available voices: $availableVoices");
+    } catch (e) {
+      print("Error fetching voices: $e");
+    }
   }
 
   void promptQuiz() {
@@ -124,7 +136,6 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
         categoryManager.addCompletedArticle(widget.article.category);
         widget.articlesNotifier.completeArticle(widget.article);
         //todo: add animation for reading points.
-
       });
     });
   }
@@ -188,8 +199,18 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
       currentSection = SpeakingSection.none;
     });
 
+    start = 0;
+    end = 0;
+
     /// Add points after reading completion
+    await Future.delayed(const Duration(milliseconds: 500));
+    await flutterTts.awaitSpeakCompletion(true);
+    await flutterTts.speak(
+        "Good job finishing the article! Here are 50 reading points for you.");
     ref.read(readingPointsProvider.notifier).addPoints(50);
+
+    start = 0;
+    end = 0;
 
     promptQuiz();
   }
@@ -256,7 +277,7 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
                           padding: const EdgeInsets.symmetric(
                               vertical: 5.0, horizontal: 10.0),
                           decoration: BoxDecoration(
-                            color: Colors.grey[300],
+                            color: Color(bgColors[widget.index]),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
@@ -308,7 +329,7 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
                                     widget.article.title.substring(start, end),
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 27,
+                                  fontSize: 24,
                                   letterSpacing: 1.4,
                                   fontWeight: FontWeight.w900,
                                   height: 1.2,
@@ -320,7 +341,7 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
                               TextSpan(
                                 text: widget.article.title.substring(end),
                                 style: const TextStyle(
-                                  fontSize: 27,
+                                  fontSize: 24,
                                   fontWeight: FontWeight.bold,
                                   color: Color(0xFF090438),
                                   height: 1.2,
@@ -332,7 +353,7 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
                               TextSpan(
                                 text: widget.article.title,
                                 style: const TextStyle(
-                                  fontSize: 27,
+                                  fontSize: 24,
                                   fontWeight: FontWeight.bold,
                                   color: Color(0xFF090438),
                                   height: 1.2,
@@ -464,26 +485,43 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
                               ).createShader(bounds);
                             },
                             blendMode: BlendMode.srcATop,
-                            child: IconButton(
-                              icon: Image.asset(
-                                quizIcons[widget.index],
-                              ),
-                              onPressed: () {
-                                _quizButtonController
-                                    .stop(); // Stop animation when button is pressed
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        QuizScreen(article: widget.article),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.rectangle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    spreadRadius: 1.0, // Spread radius
+                                    color: Colors.black
+                                        .withOpacity(0.2), // Shadow color
+                                    blurRadius: 5.0, // Softness of shadow
                                   ),
-                                );
-                              },
+                                ],
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              child: IconButton(
+                                icon: Image.asset(
+                                  quizIcons[widget.index],
+                                ),
+                                onPressed: () {
+                                  _quizButtonController
+                                      .stop(); // Stop animation when button is pressed
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => QuizScreen(
+                                        article: widget.article,
+                                        index: widget.index,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
                           );
                         }),
                   ),
                 ),
+
                 SizedBox(height: MediaQuery.of(context).size.height * 0.10),
               ],
             ),

@@ -3,7 +3,7 @@ import 'package:speech_to_text/speech_to_text.dart';
 import '../services/firestore_service.dart';
 import '../models/article_model.dart';
 import '../constants.dart';
-import '../widgets/speech_state.dart';
+import 'speech_state.dart';
 
 // final articlesProvider = FutureProvider<List<Article>>((ref) async {
 //   final selectedCategory = ref.watch(selectedCategoryProvider);
@@ -69,6 +69,7 @@ class ExpandedPanelsNotifier extends StateNotifier<List<bool>> {
     }
   }
 
+  /// Toggle the state of expansion panel at the given index
   void togglePanel(int index) {
     if (index >= 0 && index < state.length) {
       state = List.generate(
@@ -138,13 +139,15 @@ class ReadingPointsNotifier extends StateNotifier<ReadingPointsState> {
     state = state.copyWith(addedPoints: points, isAnimating: true);
 
     // Simulate a delay for animation, then update total points
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 3), () {
       state = state.copyWith(
         totalPoints: state.totalPoints + points,
         addedPoints: 0,
         isAnimating: false,
       );
     });
+
+
   }
 }
 

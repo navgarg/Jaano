@@ -1,7 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../models/article_model.dart';
-import '../services/riverpod_providers.dart';
+import 'riverpod_providers.dart';
 
 class SpeechState {
   final bool speechEnabled;
@@ -49,15 +50,23 @@ class SpeechStateNotifier extends StateNotifier<SpeechState> {
     state = state.copyWith(isListening: true);
   }
 
-  Future<void> stopListening(Article article) async {
+  Future<void> stopListening(Article article, int index) async {
     final speechToText = ref.read(speechToTextProvider);
     await speechToText.stop();
     state = state.copyWith(isListening: false);
-    if (state.wordsSpoken == article.questions![0].answer) {
+    if (state.wordsSpoken == article.questions![index].answer) {
+      Fluttertoast.showToast(
+        msg: "correct!",
+        toastLength: Toast.LENGTH_SHORT,
+      );
           print("correct");
         }
         else{
 
+      Fluttertoast.showToast(
+        msg: "wrong",
+        toastLength: Toast.LENGTH_SHORT,
+      );
           print("wrong");
         }
   }

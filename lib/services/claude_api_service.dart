@@ -12,7 +12,7 @@ class ClaudeApiService {
     required String content,
     String model="claude-3-sonnet-20240229",
     // String model = 'claude-3-opus-20240229',
-    double temperature = 1.0, //controls randomness of responses
+    double temperature = 1.0, //controls randomness of responses - higher values will give more creative and diverse responses. lower values will give focused responses.
     int? maxTokens,
   }) async {
     try {

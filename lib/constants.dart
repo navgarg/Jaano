@@ -102,6 +102,14 @@ final List<String> qpIcons = [
   "assets/sports/sport_qp.png",
   "assets/tech/tech_qp.png"
 ];
+final List<String> speechIcons = [
+  "assets/economy/eco_speech.png",
+  "assets/nature/nat_speech.png",
+  "assets/food/food_speech.png",
+  "assets/science/sci_speech.png",
+  "assets/sports/sport_speech.png",
+  "assets/tech/tech_speech.png"
+];
 final labels = ["Economy", "Nature", "Food", "Science", "Sports", "Tech"];
 final categories = [
   Categories.economy,

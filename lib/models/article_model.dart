@@ -75,7 +75,7 @@ class CategoryManager {
 }
 
 class Article {
-  //record activity of user in every session
+  //todo: record activity of user in every session
   List<Question>? questions;
   ArticleSource source;
   String? author;
@@ -180,8 +180,8 @@ Future<String> getClaudeSummary (String link) async {
   );
 
   try {
-    final response = await claudeService.sendMessage( //todo: make it easy to understand, atleast 120 words.
-      content: "Summarize the news article given at the link: $link for a child in age group of 6-10 years. Use easy to understand language and short sentences. Make it engaging and interesting, while keeping all main points intact. Do not go over 4-5 lines. Do not include introductory line at the start.",
+    final response = await claudeService.sendMessage(
+      content: "Summarize the news article given at the link: $link for a child in age group of 6-10 years. Use easy to understand language and short sentences. Make it engaging and interesting, while keeping all main points intact. Do not go over 5-6 lines, however let it be at least 120 words. Do not include introductory line at the start.",
     );
     print(response);
     print(response['content']);
