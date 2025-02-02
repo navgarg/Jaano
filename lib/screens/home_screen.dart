@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:intl/intl.dart';
 import 'package:jaano/screens/expanded_article_screen.dart';
-import 'package:jaano/widgets/bottom_navbar.dart';
+import 'package:jaano/widgets/navbar/bottom_navbar.dart';
 import 'package:jaano/widgets/carousel.dart';
 import 'package:jaano/widgets/date_picker.dart';
 import 'package:jaano/widgets/list_tile.dart';
@@ -12,7 +12,7 @@ import 'package:jaano/widgets/list_tile.dart';
 import '../constants.dart';
 import '../models/article_model.dart';
 import '../services/riverpod_providers.dart';
-import '../widgets/shimmer_list_placeholder.dart';
+import '../widgets/placeholders/shimmer_list_placeholder.dart';
 
 //images
 
@@ -164,6 +164,11 @@ class HomeScreen extends ConsumerWidget {
 
   }
 }
+//todo: what if multiple queries at the same time? filter unique elements? or fix time to send query independently
+
+//todo: make separate single text style to be used across app for uniformity.
+
+
 //greyed and locked icons for other categories.
 //other categories unlocked only by completing the prev category.
 //when tech completed, economy is highlighted.
@@ -173,10 +178,17 @@ class HomeScreen extends ConsumerWidget {
 
 //here's a question for you. questions is spoken out.
 
-//implement quiz screen.
 //different voices for reading - explore. - best possible method using android.
 //online tts - (download the audio and store in db) vs device tts.
 //scroll automatically to follow highlighted text
 
 //article read state should be maintained - add user activity to firebase
 
+
+//tap to speak should be close to the mic button.
+
+//if online - make request to LLM. - ques, summary, model ans send to LLM and check correctness.
+//asses the answer for correctness.
+//rate the ans on 1-10. response to give child whose given the ans.
+
+//natural audio from tts. store in firebase.

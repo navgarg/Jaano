@@ -181,7 +181,11 @@ Future<String> getClaudeSummary (String link) async {
 
   try {
     final response = await claudeService.sendMessage(
-      content: "Summarize the news article given at the link: $link for a child in age group of 6-10 years. Use easy to understand language and short sentences. Make it engaging and interesting, while keeping all main points intact. Do not go over 5-6 lines, however let it be at least 120 words. Do not include introductory line at the start.",
+      content: "Summarize the news article given at the link: $link for a child in age group of 6-10 years. "
+          "Use easy to understand language and short sentences. "
+          "Make it engaging and interesting, while keeping all main points intact. "
+          "Do not go over 5-6 lines, however let it be at least 120 words. "
+          "Do not include introductory line at the start.",
     );
     print(response);
     print(response['content']);
@@ -203,7 +207,10 @@ Future<List<Question>> getClaudeQuestions(String content) async {
 
   try {
     final response = await claudeService.sendMessage(
-      content: "Here is the summary of a news article meant for a child in age group of 6-10 years: $content Prepare two factual questions based on this summary. Include the answers to the questions too. Clearly demarcate every question and answer clearly.",
+      content: "Here is the summary of a news article meant for a child in age group of 6-10 years: $content "
+          "Prepare two factual questions based on this summary. "
+          "Include the answers to the questions too. "
+          "Clearly demarcate every question and answer clearly.",
     );
 
     print("Response: $response");
@@ -248,6 +255,47 @@ Future<List<Question>> getClaudeQuestions(String content) async {
   }
 }
 
-//todo:
-//if no img, dont put generic
-//mic animation to indicate listening mode and also show differently to show its getting voice
+Future<List<String>> checkClaudeAnswer (Article article, String ans, int quesIndex) async {
+  final ClaudeApiService claudeService = ClaudeApiService(
+    apiKey: dotenv.env['CLAUDE_API_KEY'] ?? " ",
+  );
+  print("ans");
+  print(ans);
+  print("ans");
+
+  if(ans.isEmpty){
+    return ["Please provide an answer", "0"];
+  }
+
+  try {
+    final response = await claudeService.sendMessage(
+      content: "Here is the summary of a news article meant for a child in age group of 6-10 years: ${article.content}. "
+          "Based on this article, the question is: ${article.questions![quesIndex].question}. "
+          "The answer model to this question is: ${article.questions![quesIndex].answer}. "
+          "The child's answer is: $ans. Rate this answer on a scale of 1-10 based on correctness and clarity in the format \"Rating: \"."
+          "Also provide feedback to the child in the format: \"Feedback to the child: \"",
+    );
+    print(response);
+    String rawContent = response['content'][0]['text'].toString();
+    print(rawContent);
+    List<String> lines = rawContent.split('\n').where((line) => line.trim().isNotEmpty).toList();
+    print(lines);
+    String rating = lines
+        .where((line) => line.startsWith('Rating'))
+        .map((line) => line.substring(line.indexOf(':') + 1).trim()).toString();
+
+    print(rating);
+    String feedback = lines
+        .where((line) => line.startsWith('Feedback to the child'))
+        .map((line) => line.substring(line.indexOf(':') + 1).trim()).toString();
+    print(feedback);
+
+    return [feedback, rating];
+
+  } catch (e) {
+    print("error while getting answer response");
+    print(e);
+    print("error");
+  }
+  return ["error"];
+}

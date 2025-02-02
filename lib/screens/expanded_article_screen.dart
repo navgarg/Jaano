@@ -5,8 +5,8 @@ import 'package:jaano/constants.dart';
 import 'package:jaano/screens/home_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jaano/screens/quiz_screen.dart';
-import 'package:jaano/widgets/bottom_navbar.dart';
-import 'package:jaano/widgets/shimmer_img_placeholder.dart';
+import 'package:jaano/widgets/navbar/bottom_navbar.dart';
+import 'package:jaano/widgets/placeholders/shimmer_img_placeholder.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 

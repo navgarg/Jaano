@@ -65,7 +65,6 @@ class FirestoreService {
       ApiService client = ApiService();
       return client.getArticle(cat);
     }
-    return [];
   }
 
   Future<void> addArticle(Article article) async {

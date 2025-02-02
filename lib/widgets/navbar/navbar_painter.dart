@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../constants.dart';
+import '../../constants.dart';
 
 /// Custom Clipper for the curve
 class CurvedNavBarPainter extends CustomPainter {

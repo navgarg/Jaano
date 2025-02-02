@@ -154,3 +154,27 @@ class ReadingPointsNotifier extends StateNotifier<ReadingPointsState> {
 final readingPointsProvider = StateNotifierProvider<ReadingPointsNotifier, ReadingPointsState>((ref) {
   return ReadingPointsNotifier();
 });
+
+class AnswerData {
+  final String feedback;
+  final String rating;
+
+  AnswerData({required this.feedback, required this.rating});
+}
+
+final answerProvider = AsyncNotifierProvider<AnswerNotifier, AnswerData?>(() => AnswerNotifier());
+
+class AnswerNotifier extends AsyncNotifier<AnswerData?> {
+  @override
+  Future<AnswerData?> build() async => null; // Initial state is null
+
+  Future<void> checkAnswer(Article article, String userAnswer, int quesIndex) async {
+    state = const AsyncValue.loading(); // Show loading indicator
+    try {
+      List<String> response = await checkClaudeAnswer(article, userAnswer, quesIndex);
+      state = AsyncValue.data(AnswerData(feedback: response[0], rating: response[1]));
+    } catch (e) {
+      state = AsyncValue.error(e, StackTrace.current);
+    }
+  }
+}

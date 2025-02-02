@@ -6,6 +6,7 @@ class ShimmerImgPlaceholder extends StatelessWidget {
   Article article;
   ShimmerImgPlaceholder({required this.article, super.key});
 
+  //todo: size of shimmer goes above size of img.
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -18,12 +19,13 @@ class ShimmerImgPlaceholder extends StatelessWidget {
               baseColor: Colors.grey.shade300,
               highlightColor: Colors.grey.shade100,
               child: Container(
-                height: 200.0,
+                height: MediaQuery.of(context).size.height * 0.25,
                 color: Colors.grey.shade300,
               ),
             ),
             // Actual image
             Image.network(
+              height: MediaQuery.of(context).size.height * 0.25,
               article.urlToImage.toString(),
               loadingBuilder: (context, child, loadingProgress) {
                 if (loadingProgress == null) {

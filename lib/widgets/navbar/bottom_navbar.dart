@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jaano/constants.dart';
 import 'package:jaano/models/article_model.dart';
-import 'package:jaano/widgets/points_container.dart';
+import 'package:jaano/widgets/navbar/points_container.dart';
 
-import '../services/riverpod_providers.dart';
+import '../../services/riverpod_providers.dart';
 import 'navbar_painter.dart';
 
 class BottomNavbar extends ConsumerWidget {
@@ -66,7 +66,7 @@ class BottomNavbar extends ConsumerWidget {
                 // Right points container
                 PointsContainer(
                   icon: qpIcons[carouselIndex],
-                  points: 1234567, // Static value for now
+                  points: 123456, // Static value for now
                   backgroundColor: Color(bgColors[carouselIndex]),
                 ),
               ],

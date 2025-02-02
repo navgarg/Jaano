@@ -8,22 +8,26 @@ class SpeechState {
   final bool speechEnabled;
   final String wordsSpoken;
   final bool isListening;
+  final bool isProcessing;
 
   SpeechState({
     this.speechEnabled = false,
     this.wordsSpoken = "",
     this.isListening = false,
+    this.isProcessing = false,
   });
 
   SpeechState copyWith({
     bool? speechEnabled,
     String? wordsSpoken,
     bool? isListening,
+    bool? isProcessing,
   }) {
     return SpeechState(
       speechEnabled: speechEnabled ?? this.speechEnabled,
       wordsSpoken: wordsSpoken ?? this.wordsSpoken,
       isListening: isListening ?? this.isListening,
+      isProcessing: isProcessing ?? this.isProcessing
     );
   }
 }
@@ -32,6 +36,14 @@ class SpeechStateNotifier extends StateNotifier<SpeechState> {
   final Ref ref;
 
   SpeechStateNotifier(this.ref) : super(SpeechState());
+
+  Future<void> startProcessing() async {
+    state = state.copyWith(isProcessing: true);
+  }
+
+  Future<void> finishProcessing() async {
+    state = state.copyWith(isProcessing: false);
+  }
 
   Future<void> initSpeech() async {
     print("speech initialised");
@@ -54,6 +66,9 @@ class SpeechStateNotifier extends StateNotifier<SpeechState> {
     final speechToText = ref.read(speechToTextProvider);
     await speechToText.stop();
     state = state.copyWith(isListening: false);
+    state = state.copyWith(isProcessing: true);
+    final answerNotifier = ref.read(answerProvider.notifier);
+    answerNotifier.checkAnswer(article, state.wordsSpoken, index);
     if (state.wordsSpoken == article.questions![index].answer) {
       Fluttertoast.showToast(
         msg: "correct!",
