@@ -2,14 +2,17 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:intl/intl.dart';
 import 'package:jaano/services/riverpod_providers.dart';
+import 'package:jaano/widgets/quiz/question_picker.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
 import '../constants.dart';
 import '../models/article_model.dart';
 import '../widgets/placeholders/shimmer_img_placeholder.dart';
-import '../widgets/quiz_answer.dart';
+import '../widgets/quiz/quiz_answer.dart';
+import 'check_ans_screen.dart';
 
 class QuizScreen extends ConsumerStatefulWidget {
   final Article article;
@@ -27,6 +30,7 @@ class QuizScreen extends ConsumerStatefulWidget {
 class _QuizScreen extends ConsumerState<QuizScreen>
     with TickerProviderStateMixin {
   late AnimationController _controller;
+  final FlutterTts flutterTts = FlutterTts();
   final Random random = Random();
   bool isProcessingDialogOpen = false;
 
@@ -42,6 +46,16 @@ class _QuizScreen extends ConsumerState<QuizScreen>
     Future.microtask(() {
       ref.read(speechStateProvider.notifier).initSpeech();
     });
+
+    flutterTts.setLanguage(
+        'en-US'); //todo: set language after getting from device (?)
+    flutterTts.setPitch(1.0);
+    flutterTts.setSpeechRate(0.2);
+    flutterTts.setStartHandler(() {
+    });
+
+    flutterTts.speak("text");
+
   }
 
   @override
@@ -75,15 +89,23 @@ class _QuizScreen extends ConsumerState<QuizScreen>
         Future.delayed(Duration.zero, () {
           if (mounted) showProcessingDialog(context, ref, widget.index);
         });
-      } else if (next.hasValue) {
+      } else if (next.value != null) {
         Future.delayed(Duration.zero, () {
-          if (mounted) {
+          if (mounted) { //todo: add check here to ensure dialog opens only after click.
             if (isProcessingDialogOpen) {
               // Ensure processing dialog is closed first
               Navigator.of(context, rootNavigator: true).pop();
               isProcessingDialogOpen = false; // Reset flag
             }
-            showAnswerDialog(context, next.value!.feedback, widget.index);
+            // showAnswerDialog(context, next.value!.feedback, widget.index);
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => CheckAnsScreen(
+                  index: widget.index,
+                  answerData: next.value!,
+                ),
+              ),
+            );
           }
         });
       }
@@ -117,76 +139,8 @@ class _QuizScreen extends ConsumerState<QuizScreen>
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(
-                    height: 20.0,
-                  ),
-                  SizedBox(
-                    height: 50.0,
-                    width: double.infinity,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          flex: 1,
-                          child: IconButton(
-                              onPressed: () {
-                                if (currQues == 2) {
-                                  ref.read(questionIndexProvider.notifier).state =
-                                      1;
-                                }
-                              },
-                              icon: currQues == 1
-                                  ? const ImageIcon(
-                                      AssetImage("assets/prev_date_grey.png"))
-                                  : const ImageIcon(
-                                      AssetImage("assets/prev_date.png"))),
-                          // icon: const ImageIcon(
-                          //     AssetImage("assets/prev_date.png"))),
-                        ),
-                        Expanded(
-                          flex: 2,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 10.0, horizontal: 10.0),
-                            decoration: BoxDecoration(
-                              color: Color(bgColors[widget.index]),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              "Question $currQues",
-                              style: const TextStyle(
-                                color: Color(0xFF090438),
-                                fontSize: 20.0,
-                                fontWeight: FontWeight.w500,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: IconButton(
-                              onPressed: () {
-                                if (currQues == 1) {
-                                  ref.read(questionIndexProvider.notifier).state =
-                                      2;
-                                }
-                              },
-                              icon: currQues == 2
-                                  ? const ImageIcon(
-                                      AssetImage("assets/next_date_grey.png"))
-                                  : const ImageIcon(
-                                      AssetImage("assets/next_date.png"))),
-                          // icon: const ImageIcon(
-                          //     AssetImage("assets/next_date.png"))),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20.0,
-                  ),
-            
+                  ///question picker
+                  QuestionPicker(index: widget.index),
                   ///image
                   ShimmerImgPlaceholder(article: widget.article),
                   const SizedBox(height: 30),

@@ -255,7 +255,7 @@ Future<List<Question>> getClaudeQuestions(String content) async {
   }
 }
 
-Future<List<String>> checkClaudeAnswer (Article article, String ans, int quesIndex) async {
+Future<List<dynamic>> checkClaudeAnswer (Article article, String ans, int quesIndex) async {
   final ClaudeApiService claudeService = ClaudeApiService(
     apiKey: dotenv.env['CLAUDE_API_KEY'] ?? " ",
   );
@@ -263,9 +263,9 @@ Future<List<String>> checkClaudeAnswer (Article article, String ans, int quesInd
   print(ans);
   print("ans");
 
-  if(ans.isEmpty){
-    return ["Please provide an answer", "0"];
-  }
+  // if(ans.isEmpty){
+  //   return ["Please provide an answer", "0"];
+  // }
 
   try {
     final response = await claudeService.sendMessage(
@@ -283,6 +283,13 @@ Future<List<String>> checkClaudeAnswer (Article article, String ans, int quesInd
     String rating = lines
         .where((line) => line.startsWith('Rating'))
         .map((line) => line.substring(line.indexOf(':') + 1).trim()).toString();
+    rating = rating.replaceAll("(", "");
+    rating = rating.replaceAll(")", "");
+
+    print(rating);
+    int? rat = int.tryParse(rating);
+    rat ??= 0;
+    print(rat);
 
     print(rating);
     String feedback = lines
@@ -290,7 +297,12 @@ Future<List<String>> checkClaudeAnswer (Article article, String ans, int quesInd
         .map((line) => line.substring(line.indexOf(':') + 1).trim()).toString();
     print(feedback);
 
-    return [feedback, rating];
+    feedback ??= "";
+
+    feedback = feedback.replaceAll("(", "");
+    feedback = feedback.replaceAll(")", "");
+
+    return [feedback, rat];
 
   } catch (e) {
     print("error while getting answer response");

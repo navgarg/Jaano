@@ -1,12 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
 import '../models/article_model.dart';
 import 'riverpod_providers.dart';
 
 class SpeechState {
   final bool speechEnabled;
-  final String wordsSpoken;
+  late String wordsSpoken;
   final bool isListening;
   final bool isProcessing;
 
@@ -37,19 +36,20 @@ class SpeechStateNotifier extends StateNotifier<SpeechState> {
 
   SpeechStateNotifier(this.ref) : super(SpeechState());
 
-  Future<void> startProcessing() async {
-    state = state.copyWith(isProcessing: true);
-  }
-
-  Future<void> finishProcessing() async {
-    state = state.copyWith(isProcessing: false);
-  }
+  // Future<void> startProcessing() async {
+  //   state = state.copyWith(isProcessing: true);
+  // }
+  //
+  // Future<void> finishProcessing() async {
+  //   state = state.copyWith(isProcessing: false);
+  // }
 
   Future<void> initSpeech() async {
     print("speech initialised");
     final speechToText = ref.read(speechToTextProvider);
     final isAvailable = await speechToText.initialize();
     state = state.copyWith(speechEnabled: isAvailable);
+    state.wordsSpoken = "";
   }
 
   Future<void> startListening() async {
@@ -68,21 +68,27 @@ class SpeechStateNotifier extends StateNotifier<SpeechState> {
     state = state.copyWith(isListening: false);
     state = state.copyWith(isProcessing: true);
     final answerNotifier = ref.read(answerProvider.notifier);
-    answerNotifier.checkAnswer(article, state.wordsSpoken, index);
-    if (state.wordsSpoken == article.questions![index].answer) {
-      Fluttertoast.showToast(
-        msg: "correct!",
-        toastLength: Toast.LENGTH_SHORT,
-      );
-          print("correct");
-        }
-        else{
-
-      Fluttertoast.showToast(
-        msg: "wrong",
-        toastLength: Toast.LENGTH_SHORT,
-      );
-          print("wrong");
-        }
+    if(state.wordsSpoken.isNotEmpty) {
+      answerNotifier.checkAnswer(article, state.wordsSpoken, index);
+    }
+    else{
+      Fluttertoast.showToast(msg: "Please provide an answer. ", toastLength: Toast.LENGTH_LONG);
+      state = state.copyWith(isProcessing: false);
+    }
+    // if (state.wordsSpoken == article.questions![index].answer) {
+    //   Fluttertoast.showToast(
+    //     msg: "correct!",
+    //     toastLength: Toast.LENGTH_SHORT,
+    //   );
+    //       print("correct");
+    //     }
+    //     else{
+    //
+    //   Fluttertoast.showToast(
+    //     msg: "wrong",
+    //     toastLength: Toast.LENGTH_SHORT,
+    //   );
+    //       print("wrong");
+    //     }
   }
 }

@@ -77,6 +77,8 @@ flutter:
     - assets/next_date.png
     - assets/prev_date.png
     - assets/next_date_grey.png
+    - assets/correct_ans.png
+    - assets/wrong_ans.png
     - assets/prev_date_grey.png
     - assets/tech/tech_bg.png
     - assets/tech/

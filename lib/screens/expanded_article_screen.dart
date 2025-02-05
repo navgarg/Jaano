@@ -5,6 +5,7 @@ import 'package:jaano/constants.dart';
 import 'package:jaano/screens/home_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jaano/screens/quiz_screen.dart';
+import 'package:jaano/widgets/category_header.dart';
 import 'package:jaano/widgets/navbar/bottom_navbar.dart';
 import 'package:jaano/widgets/placeholders/shimmer_img_placeholder.dart';
 import 'package:shimmer/shimmer.dart';
@@ -253,57 +254,7 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
               mainAxisSize: MainAxisSize.min,
               children: [
                 ///category header and back button
-                SizedBox(
-                  height: 50.0,
-                  width: double.infinity,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        flex: 1,
-                        child: IconButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              // Navigator.push(context, MaterialPageRoute(builder: (context) => const HomeScreen()));
-                            },
-                            icon: const Icon(
-                              Icons.arrow_back,
-                              color: Colors.black,
-                            )),
-                      ),
-                      Expanded(
-                        flex: 2,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 5.0, horizontal: 10.0),
-                          decoration: BoxDecoration(
-                            color: Color(bgColors[widget.index]),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            labels[widget.index],
-                            style: const TextStyle(
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 1,
-                        child: IconButton(
-                            onPressed: () {},
-                            icon: const Icon(
-                              Icons.arrow_back,
-                              color: Colors.transparent,
-                            )),
-                      ),
-                    ],
-                  ),
-                ),
-
+                CategoryHeader(index: widget.index),
                 /// Title
                 Padding(
                   padding: const EdgeInsets.all(20.0),
@@ -572,9 +523,6 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
 //if you swipe right/left, category is changed
 //control font size irrespective of device settings.
 
-//use Ai to rephrase title to 12 words
-
 //while storing to database, add fav icon too. - if favicon present in cache alr, dont do.
 
-//male/female voices for tts? check different options.
 //how to get same across devices?

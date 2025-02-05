@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import '../services/firestore_service.dart';
 import '../models/article_model.dart';
@@ -157,7 +158,7 @@ final readingPointsProvider = StateNotifierProvider<ReadingPointsNotifier, Readi
 
 class AnswerData {
   final String feedback;
-  final String rating;
+  final int rating;
 
   AnswerData({required this.feedback, required this.rating});
 }
@@ -171,8 +172,10 @@ class AnswerNotifier extends AsyncNotifier<AnswerData?> {
   Future<void> checkAnswer(Article article, String userAnswer, int quesIndex) async {
     state = const AsyncValue.loading(); // Show loading indicator
     try {
-      List<String> response = await checkClaudeAnswer(article, userAnswer, quesIndex);
-      state = AsyncValue.data(AnswerData(feedback: response[0], rating: response[1]));
+      List<dynamic> response = await checkClaudeAnswer(
+          article, userAnswer, quesIndex);
+      state = AsyncValue.data(
+          AnswerData(feedback: response[0], rating: response[1]));
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
     }

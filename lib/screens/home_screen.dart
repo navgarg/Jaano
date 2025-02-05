@@ -174,8 +174,6 @@ class HomeScreen extends ConsumerWidget {
 //when tech completed, economy is highlighted.
 //rings are empty when new category is started
 
-//animation for smooth transition from non expanded view to expanded view.
-
 //here's a question for you. questions is spoken out.
 
 //different voices for reading - explore. - best possible method using android.
@@ -184,11 +182,9 @@ class HomeScreen extends ConsumerWidget {
 
 //article read state should be maintained - add user activity to firebase
 
-
-//tap to speak should be close to the mic button.
-
-//if online - make request to LLM. - ques, summary, model ans send to LLM and check correctness.
-//asses the answer for correctness.
-//rate the ans on 1-10. response to give child whose given the ans.
-
 //natural audio from tts. store in firebase.
+
+
+//online tts - how? send request everyday and store in firebase? whisper.
+//add category for ques screen too
+//diff icon for mic button
