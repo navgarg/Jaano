@@ -1,16 +1,48 @@
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import '../models/article_model.dart';
 import 'article_api_service.dart';
 
+enum PointType{quizPoints, articlePoints}
 class FirestoreService {
 
   CollectionReference ref = FirebaseFirestore.instance.collection("articles");
   String date = DateFormat("yyyy-MM-dd").format(DateTime.now());
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  // String date = '18-11-2024';
+  Future<int> getUserPoints(String userId, PointType type) async {
+    try {
+      DocumentSnapshot snapshot = await _db
+          .collection('users')
+          .doc(userId)
+          .get(const GetOptions(source: Source.cache)); // Load from cache first
+
+      if (!snapshot.exists) {
+        snapshot = await _db
+            .collection('users')
+            .doc(userId)
+            .get(const GetOptions(source: Source.server)); // Fetch from Firestore
+      }
+
+      print("type");
+      print(type.toString());
+      return snapshot.exists ? (snapshot[type.toString()] as int) : 0;
+    } catch (e) {
+      print("Error fetching points: $e");
+      return 0;
+    }
+  }
+
+  // Update user points in Firestore
+  Future<void> updateUserPoints(String userId, int newPoints, PointType type) async {
+    await _db.collection('users').doc(userId).update({type.toString(): newPoints});
+  }
+
+  // Listen to real-time points updates
+  Stream<int> streamUserPoints(String userId, PointType type) {
+    return _db.collection('users').doc(userId).snapshots().map(
+            (snapshot) => snapshot.exists ? (snapshot[type.toString()] as int) : 0);
+  }
 
   Future<List<Article>> getFirebaseArticles(Categories cat) async {
     // Categories cat = Categories.values.byName(category);
@@ -88,4 +120,6 @@ class FirestoreService {
       print("Error adding article: $e");
     }
   }
+
+
 }

@@ -33,6 +33,9 @@ class _QuizScreen extends ConsumerState<QuizScreen>
   final FlutterTts flutterTts = FlutterTts();
   final Random random = Random();
   bool isProcessingDialogOpen = false;
+  bool isSpeaking = false;
+
+  bool shouldSpeak = false;
 
   @override
   void initState() {
@@ -54,12 +57,23 @@ class _QuizScreen extends ConsumerState<QuizScreen>
     flutterTts.setStartHandler(() {
     });
 
-    flutterTts.speak("text");
-
   }
+
+  void speakQues (String ques) async {
+    if(!shouldSpeak) return;
+    await flutterTts.speak(ques);
+  }
+
+  Future<void> ttsStop() async {
+    shouldSpeak = false;
+    var result = await flutterTts.stop();
+    if (result == 1) setState(() => isSpeaking = false);
+  }
+
 
   @override
   void dispose() {
+    flutterTts.stop();
     _controller.dispose();
     super.dispose();
   }
@@ -134,6 +148,12 @@ class _QuizScreen extends ConsumerState<QuizScreen>
               ),
             ),
           ),
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(colors: [Color(bgColors[widget.index]).withOpacity(0.5), Color(bgColors[widget.index]).withOpacity(0.5)]),
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+          ),
           SingleChildScrollView(
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -147,15 +167,33 @@ class _QuizScreen extends ConsumerState<QuizScreen>
             
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text(
-                      widget.article.questions?[currQues - 1].question
-                              .toString() ??
-                          " ",
-                      style: const TextStyle(
-                        color: Color(0xFF090438),
-                        fontSize: 20.0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(colors: [Color(bgColors[widget.index]), Color(bgColors[widget.index])]),
+                        border: Border.all(color: Colors.white, width: 1.0),
+                        borderRadius: BorderRadius.circular(10.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5), // Shadow color
+                            spreadRadius: 3, // How much the shadow spreads
+                            blurRadius: 5, // Softness of the shadow
+                            offset: const Offset(-5, 5), // Moves shadow left (-X) and down (+Y)
+                          ),
+                        ],
                       ),
-                      textAlign: TextAlign.justify,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                        child: Text(
+                          widget.article.questions?[currQues - 1].question
+                                  .toString() ??
+                              " ",
+                          style: const TextStyle(
+                            color: Color(0xFF090438),
+                            fontSize: 20.0,
+                          ),
+                          textAlign: TextAlign.justify,
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -289,6 +327,29 @@ class _QuizScreen extends ConsumerState<QuizScreen>
           ),
         ]),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          print("pressed fab");
+          print(isSpeaking);
+          if (isSpeaking) {
+            print("in if for fab");
+            ttsStop();
+          } else {
+            print("in else for fab");
+            setState(() {
+              shouldSpeak = true; // Enable speaking
+            });
+            speakQues(widget.article.questions?[currQues - 1].question.toString() ?? "");
+          }
+        },
+        backgroundColor: const Color(0xFF090438),
+        child: Icon(
+          isSpeaking ? Icons.pause_circle : Icons.play_circle,
+          color: Colors.white,
+          size: 40.0,
+        ),
+      ),
+        // floatingActionButtonLocation: FloatingActionButtonLocation.,
     );
   }
 }

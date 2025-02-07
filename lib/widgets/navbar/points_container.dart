@@ -14,13 +14,14 @@ class PointsContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: MediaQuery.of(context).size.height * 0.055,
       width: MediaQuery.of(context).size.width * 0.3,
       margin: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.02),
       padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.01, vertical: 10),
       decoration: BoxDecoration(
         color: backgroundColor,
         border: Border.all(
-          color: Colors.black, // Border color
+          color: Colors.white, // Border color
           width: 1.0, // Border width
         ),
         borderRadius: BorderRadius.circular(20),
@@ -29,9 +30,9 @@ class PointsContainer extends StatelessWidget {
         children: [
           Image.asset(
               icon,
-              height: 38,
+              height: 35,
           ),
-          SizedBox(width: MediaQuery.of(context).size.width * 0.001),
+          SizedBox(width: MediaQuery.of(context).size.width * 0.01),
           TweenAnimationBuilder<int>(
             tween: IntTween(begin: 0, end: points),
             duration: const Duration(seconds: 1),

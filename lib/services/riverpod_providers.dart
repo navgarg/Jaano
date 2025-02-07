@@ -6,12 +6,6 @@ import '../models/article_model.dart';
 import '../constants.dart';
 import 'speech_state.dart';
 
-// final articlesProvider = FutureProvider<List<Article>>((ref) async {
-//   final selectedCategory = ref.watch(selectedCategoryProvider);
-//   FirestoreService client = FirestoreService();
-//   print(selectedCategory);
-//   return await client.getFirebaseArticles(selectedCategory);
-// });
 final articlesProvider =
 StateNotifierProvider<ArticlesNotifier, AsyncValue<List<Article>>>((ref) => ArticlesNotifier());
 
@@ -109,23 +103,23 @@ final speechStateProvider = StateNotifierProvider<SpeechStateNotifier, SpeechSta
       (ref) => SpeechStateNotifier(ref),
 );
 
-class ReadingPointsState {
+class PointsState {
   final int totalPoints;
   final int addedPoints;
   final bool isAnimating;
 
-  ReadingPointsState({
+  PointsState({
     required this.totalPoints,
     this.addedPoints = 0,
     this.isAnimating = false,
   });
 
-  ReadingPointsState copyWith({
+  PointsState copyWith({
     int? totalPoints,
     int? addedPoints,
     bool? isAnimating,
   }) {
-    return ReadingPointsState(
+    return PointsState(
       totalPoints: totalPoints ?? this.totalPoints,
       addedPoints: addedPoints ?? this.addedPoints,
       isAnimating: isAnimating ?? this.isAnimating,
@@ -133,28 +127,48 @@ class ReadingPointsState {
   }
 }
 
-class ReadingPointsNotifier extends StateNotifier<ReadingPointsState> {
-  ReadingPointsNotifier() : super(ReadingPointsState(totalPoints: 0));
+class PointsNotifier extends StateNotifier<PointsState> {
+  final FirestoreService _firestoreService = FirestoreService();
+  final String userId;
+  final PointType pointType;
+  PointsNotifier(this.userId, this.pointType) : super(PointsState(totalPoints: 0)) {
+    _initialize();
+  }
 
-  void addPoints(int points) {
-    state = state.copyWith(addedPoints: points, isAnimating: true);
+  // Load initial points from Firestore (cached first)
+  Future<void> _initialize() async {
+    final cachedPoints = await _firestoreService.getUserPoints(userId, pointType);
+    state = state.copyWith(totalPoints: cachedPoints);
 
-    // Simulate a delay for animation, then update total points
-    Future.delayed(const Duration(seconds: 3), () {
-      state = state.copyWith(
-        totalPoints: state.totalPoints + points,
-        addedPoints: 0,
-        isAnimating: false,
-      );
+    // Listen to Firestore updates in real-time
+    _firestoreService.streamUserPoints(userId, pointType).listen((newPoints) {
+      if (!state.isAnimating && newPoints != state.totalPoints) { // Avoid resetting points during animation
+        state = state.copyWith(totalPoints: newPoints);
+      }
     });
+  }
 
-
+  // Add points with animation and update Firestore
+  Future<void> addPoints(int points) async {
+    final updatedPoints = state.totalPoints + points;
+    state = state.copyWith(addedPoints: points, isAnimating: true);
+    // Simulate a delay for animation
+    await Future.delayed(const Duration(seconds: 3));
+    state = state.copyWith(totalPoints: updatedPoints, addedPoints: 0, isAnimating: false);
+    // Sync new points to Firestore
+    await _firestoreService.updateUserPoints(userId, updatedPoints, pointType);
+    print("added pts to firebase");
+    print(pointType.toString());
   }
 }
 
-final readingPointsProvider = StateNotifierProvider<ReadingPointsNotifier, ReadingPointsState>((ref) {
-  return ReadingPointsNotifier();
-});
+final readingPointsProvider = StateNotifierProvider.family<PointsNotifier, PointsState, String>(
+        (ref, userId) => PointsNotifier(userId, PointType.articlePoints),
+);
+
+final quizPointsProvider = StateNotifierProvider.family<PointsNotifier, PointsState, String>(
+      (ref, userId) => PointsNotifier(userId, PointType.quizPoints),
+);
 
 class AnswerData {
   final String feedback;

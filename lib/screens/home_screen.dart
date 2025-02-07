@@ -184,7 +184,6 @@ class HomeScreen extends ConsumerWidget {
 
 //natural audio from tts. store in firebase.
 
-
 //online tts - how? send request everyday and store in firebase? whisper.
 //add category for ques screen too
 //diff icon for mic button

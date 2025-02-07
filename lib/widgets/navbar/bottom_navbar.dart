@@ -14,22 +14,31 @@ class BottomNavbar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final points = ref.watch(readingPointsProvider).totalPoints;
+    final readingPoints = ref.watch(readingPointsProvider("user.id")).totalPoints; //todo: change user id
+    final quizPoints = ref.watch(quizPointsProvider("user.id")).totalPoints; //todo: change user id
+
     return Align(
       alignment: Alignment.bottomCenter,
       child: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.10, // Height of the nav bar
-        child: Stack(
-          children: [
-            // Background curve
-            CustomPaint(
-              painter: CurvedNavBarPainter(index: carouselIndex),
-              size: Size(
-                MediaQuery.of(context).size.width,
-                MediaQuery.of(context).size.height * 0.10,
-              ),
-            ),
+        height: MediaQuery.of(context).size.height * 0.11, // Height of the nav bar
+        // child: Stack(
+        //   children: [
+        //     // Background curve
+        //     CustomPaint(
+        //       painter: CurvedNavBarPainter(index: carouselIndex),
+        //       size: Size(
+        //         MediaQuery.of(context).size.width,
+        //         MediaQuery.of(context).size.height * 0.10,
+        //       ),
+        //     ),
 
+        child: Container(
+          decoration: BoxDecoration(
+            color: Color(bgColors[carouselIndex]).withOpacity(0.78),
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          
+          child: 
             // Points containers and profile icon
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -38,7 +47,7 @@ class BottomNavbar extends ConsumerWidget {
                 // Left points container
                 PointsContainer(
                   icon: diamondIcons[carouselIndex],
-                  points: points,
+                  points: readingPoints,
                   backgroundColor: Color(bgColors[carouselIndex]),
                 ),
 
@@ -66,12 +75,13 @@ class BottomNavbar extends ConsumerWidget {
                 // Right points container
                 PointsContainer(
                   icon: qpIcons[carouselIndex],
-                  points: 123456, // Static value for now
+                  points: quizPoints,
                   backgroundColor: Color(bgColors[carouselIndex]),
                 ),
               ],
             ),
-          ],
+          // ],
+          // )
         ),
       ),
     );

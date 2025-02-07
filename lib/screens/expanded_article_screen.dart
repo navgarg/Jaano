@@ -208,7 +208,8 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
     await flutterTts.awaitSpeakCompletion(true);
     await flutterTts.speak(
         "Good job finishing the article! Here are 50 reading points for you.");
-    ref.read(readingPointsProvider.notifier).addPoints(50);
+    final readingPointsState = ref.read(readingPointsProvider("user.id").notifier); //todo: change user id
+    readingPointsState.addPoints(50);
 
     start = 0;
     end = 0;
