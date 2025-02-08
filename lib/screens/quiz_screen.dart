@@ -55,13 +55,11 @@ class _QuizScreen extends ConsumerState<QuizScreen>
         'en-US'); //todo: set language after getting from device (?)
     flutterTts.setPitch(1.0);
     flutterTts.setSpeechRate(0.2);
-    flutterTts.setStartHandler(() {
-    });
-
+    flutterTts.setStartHandler(() {});
   }
 
-  void speakQues (String ques) async {
-    if(!shouldSpeak) return;
+  void speakQues(String ques) async {
+    if (!shouldSpeak) return;
     await flutterTts.speak(ques);
   }
 
@@ -70,7 +68,6 @@ class _QuizScreen extends ConsumerState<QuizScreen>
     var result = await flutterTts.stop();
     if (result == 1) setState(() => isSpeaking = false);
   }
-
 
   @override
   void dispose() {
@@ -97,7 +94,6 @@ class _QuizScreen extends ConsumerState<QuizScreen>
 
   @override
   Widget build(BuildContext context) {
-
     final currQues = ref.watch(questionIndexProvider);
     final speechState = ref.watch(speechStateProvider);
     final speechNotifier = ref.read(speechStateProvider.notifier);
@@ -145,15 +141,17 @@ class _QuizScreen extends ConsumerState<QuizScreen>
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image:
-                    AssetImage(expdBgImgs[widget.index]),
+                image: AssetImage(expdBgImgs[widget.index]),
                 fit: BoxFit.cover,
               ),
             ),
           ),
           Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [Color(bgColors[widget.index]).withOpacity(0.5), Color(bgColors[widget.index]).withOpacity(0.5)]),
+              gradient: LinearGradient(colors: [
+                Color(overlayColors[widget.index]).withOpacity(0.5),
+                Color(overlayColors[widget.index]).withOpacity(0.5)
+              ]),
               borderRadius: BorderRadius.circular(10.0),
             ),
           ),
@@ -163,20 +161,27 @@ class _QuizScreen extends ConsumerState<QuizScreen>
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   ///category header
-                  CategoryHeader(index: widget.index,),
+                  CategoryHeader(
+                    index: widget.index,
+                  ),
                   const SizedBox(height: 30),
 
                   ///question picker
-                  QuestionPicker(index: widget.index), //todo: add container color to arrows too
+                  QuestionPicker(
+                      index: widget
+                          .index), //todo: add container color to arrows too
                   ///image
                   ShimmerImgPlaceholder(article: widget.article),
                   const SizedBox(height: 30),
-            
+
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Container(
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(colors: [Color(bgColors[widget.index]), Color(bgColors[widget.index])]),
+                        gradient: LinearGradient(colors: [
+                          Color(textBoxColors[widget.index]),
+                          Color(textBoxColors[widget.index])
+                        ]),
                         border: Border.all(color: Colors.white, width: 1.0),
                         borderRadius: BorderRadius.circular(10.0),
                         boxShadow: [
@@ -188,49 +193,52 @@ class _QuizScreen extends ConsumerState<QuizScreen>
                           ),
                         ],
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-                        child: Text(
-                          widget.article.questions?[currQues - 1].question
-                                  .toString() ??
-                              " ",
-                          style: const TextStyle(
-                            color: Color(0xFF090438),
-                            fontSize: 20.0,
-                          ),
-                          textAlign: TextAlign.justify,
-                        ),
+                      child:
+
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 16.0),
+                            child: Text(
+                              widget.article.questions?[currQues - 1].question
+                                      .toString() ??
+                                  " ",
+                              style: const TextStyle(
+                                color: Color(0xFF090438),
+                                fontSize: 20.0,
+                              ),
+                              textAlign: TextAlign.justify,
+                            ),
                       ),
                     ),
                   ),
                   const SizedBox(height: 20),
-            
+
                   /// Words Spoken
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: SingleChildScrollView(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(colors: [
-                              Color(bgColors[widget.index]),
-                              Color(bgColors[widget.index])
-                            ]),
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                            child: Text(
-                              speechState.wordsSpoken, //todo: check??
-                              style: const TextStyle(
-                                color: Color(0xFF090438),
-                                fontSize: 18.0,
-                                letterSpacing: 1.4,
-                                fontStyle: FontStyle.italic,
-                              ),
-                              textAlign: TextAlign.justify,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(colors: [
+                            Color(textBoxColors[widget.index]),
+                            Color(textBoxColors[widget.index])
+                          ]),
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Text(
+                            speechState.wordsSpoken, //todo: check??
+                            style: const TextStyle(
+                              color: Color(0xFF090438),
+                              fontSize: 18.0,
+                              letterSpacing: 1.4,
+                              fontStyle: FontStyle.italic,
                             ),
+                            textAlign: TextAlign.justify,
                           ),
                         ),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -294,8 +302,9 @@ class _QuizScreen extends ConsumerState<QuizScreen>
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: speechState.isListening
-                                      ? Color(bgColors[widget.index]).withOpacity(
-                                          0.5 - _controller.value / 2)
+                                      ? Color(bgColors[widget.index])
+                                          .withOpacity(
+                                              0.5 - _controller.value / 2)
                                       : Colors.transparent,
                                 ),
                               );
@@ -312,7 +321,8 @@ class _QuizScreen extends ConsumerState<QuizScreen>
                                   color: Color(bgColors[widget.index])
                                       .withOpacity(0.6), // Shadow color
                                   blurRadius: 15, // Spread of the shadow
-                                  spreadRadius: 5, // Intensity of the glow effect
+                                  spreadRadius:
+                                      5, // Intensity of the glow effect
                                   offset: const Offset(0, 0), // Centered shadow
                                 ),
                               ],
@@ -346,7 +356,9 @@ class _QuizScreen extends ConsumerState<QuizScreen>
             setState(() {
               shouldSpeak = true; // Enable speaking
             });
-            speakQues(widget.article.questions?[currQues - 1].question.toString() ?? "");
+            speakQues(
+                widget.article.questions?[currQues - 1].question.toString() ??
+                    "");
           }
         },
         backgroundColor: const Color(0xFF090438),
@@ -356,7 +368,7 @@ class _QuizScreen extends ConsumerState<QuizScreen>
           size: 40.0,
         ),
       ),
-        // floatingActionButtonLocation: FloatingActionButtonLocation.,
+      // floatingActionButtonLocation: FloatingActionButtonLocation.,
     );
   }
 }

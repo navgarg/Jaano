@@ -16,20 +16,6 @@ const String Claude_baseUrl = 'https://api.anthropic.com/v1/messages';
 // const String newsUrl = "/v2/top-headlines";
 const String baseUrl = "raw.githubusercontent.com";
 const String newsUrl = "/navgarg/Loose-Files/master/jaano_newsdata.json";
-final List<int> bgColors = [
-  ///economy background color
-  0xFF3EB99C,
-  ///nature
-  0xFFAFE4A8,
-  ///food
-  0xFFFEC863,
-  ///science
-  0xFF7EBBF1,
-  ///sports
-  0xFFEA9D9E,
-  ///tech
-  0xFFCFC4FF,
-];
 final List<String> homeBgImgs = [
   "assets/economy/eco_bg.png",
   "assets/nature/nat_bg.png",
@@ -118,4 +104,90 @@ final categories = [
   Categories.science,
   Categories.sports,
   Categories.technology
+];
+
+final List<int> bgColors = [
+  ///economy background color
+  0xFF3EB99C,
+  ///nature
+  0xFFAFE4A8,
+  ///food
+  0xFFFEC863,
+  ///science
+  0xFF7EBBF1,
+  ///sports
+  0xFFEA9D9E,
+  ///tech
+  0xFFCFC4FF,
+];
+
+final List<int> homeTileColors = [
+  ///economy background color
+  0xFF90FFE5,
+  ///nature
+  0xFFADE98D,
+  ///food
+  0xFFF7D596,
+  ///science
+  0xFF8DC8FD,
+  ///sports
+  0xFFEA9D9E,
+  ///tech
+  0xFFB1A1FC,
+];
+final List<int> categoryHeaderColors = [
+  ///economy background color
+  0xFF24A98B,
+  ///nature
+  0xFF52AE40,
+  ///food
+  0xFFD49219,
+  ///science
+  0xFF2C8CE2,
+  ///sports
+  0xFFC95E60,
+  ///tech
+  0xFF7C6DC0,
+];
+final List<int> questionPickerColors = [
+  ///economy background color
+  0xFF1D987C,
+  ///nature
+  0xFF3F9B3F,
+  ///food
+  0xFFB97F14,
+  ///science
+  0xFF2881D0,
+  ///sports
+  0xFFBD5A5C,
+  ///tech
+  0xFF7C6DC0,
+];
+final List<int> overlayColors = [
+  ///economy background color
+  0xFF5BE4C4,
+  ///nature
+  0xFF55C83E,
+  ///food
+  0xFFE9C278,
+  ///science
+  0xFF2A81CF,
+  ///sports
+  0xFFE88183,
+  ///tech
+  0xFFAD9CEB,
+];
+final List<int> textBoxColors = [
+  ///economy background color
+  0xFF32CEAA,
+  ///nature
+  0xFF53B153,
+  ///food
+  0xFFCA9739,
+  ///science
+  0xFF288BE4,
+  ///sports
+  0xFFD76E70,
+  ///tech
+  0xFF917CE3,
 ];

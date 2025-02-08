@@ -258,6 +258,15 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
               ),
             ),
           ),
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(colors: [
+                Color(overlayColors[widget.index]).withOpacity(0.5),
+                Color(overlayColors[widget.index]).withOpacity(0.5)
+              ]),
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+          ),
           SingleChildScrollView(
             controller: _scrollController,
             child: Column(
@@ -352,8 +361,8 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
                   child: Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(colors: [
-                        Color(bgColors[widget.index]),
-                        Color(bgColors[widget.index])
+                        Color(textBoxColors[widget.index]),
+                        Color(textBoxColors[widget.index])
                       ]),
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -361,7 +370,7 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
                         padding: const EdgeInsets.symmetric(
                             horizontal: 20.0, vertical: 10.0),
                         child: RichText(
-                            textAlign: TextAlign.left,
+                            textAlign: TextAlign.justify,
                             text: TextSpan(
                                 children: currentSection ==
                                         SpeakingSection.content
@@ -376,7 +385,9 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
                                           style: const TextStyle(
                                               color: Color(0xFF090438),
                                               fontSize: 24.0,
-                                              letterSpacing: 1.4),
+                                              letterSpacing: 1.4,
+                                          ),
+
                                         ),
                                         TextSpan(
                                             text: widget.article.content != null
@@ -401,6 +412,7 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
                                               color: Color(0xFF090438),
                                               fontSize: 24.0,
                                               letterSpacing: 1.4,
+
                                             )),
                                       ]
                                     : [

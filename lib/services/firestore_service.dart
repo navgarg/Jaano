@@ -54,6 +54,7 @@ class FirestoreService {
     QuerySnapshot<Map<String, dynamic>> articleSnapshot =
     await ref.doc(date).collection('arts').where("category", isEqualTo: cat.toString()).get(const GetOptions(source: Source.cache));
 
+    Source articleSource = Source.cache;
     print("get articles");
     print(snapshot.data());
 
@@ -61,6 +62,12 @@ class FirestoreService {
     print("Arts collection path: ${ref.doc(date).collection('arts').path}");
     print("Source collection path: ${ref.doc(date).collection('arts').doc().collection('source').path}");
     print("Questions collection path: ${ref.doc(date).collection('arts').doc().collection('questions').path}");
+
+    if(articleSnapshot.docs.isEmpty){
+      articleSnapshot =
+      await ref.doc(date).collection('arts').where("category", isEqualTo: cat.toString()).get(const GetOptions(source: Source.server));
+      articleSource = Source.server;
+    }
 
     if (articleSnapshot.docs.isNotEmpty){
       print("exists");
@@ -71,10 +78,10 @@ class FirestoreService {
       for(var doc in articleSnapshot.docs){
         print("Processing article ID: ${doc.id}");
         QuerySnapshot<Map<String, dynamic>> sourceSnapshot =
-        await ref.doc(date).collection('arts').doc(doc.id).collection('source').get(const GetOptions(source: Source.cache));
+        await ref.doc(date).collection('arts').doc(doc.id).collection('source').get(GetOptions(source: articleSource));
 
         QuerySnapshot<Map<String, dynamic>> questionSnapshot =
-        await ref.doc(date).collection('arts').doc(doc.id).collection('questions').get(const GetOptions(source: Source.cache));
+        await ref.doc(date).collection('arts').doc(doc.id).collection('questions').get(GetOptions(source: articleSource));
 
         List<ArticleSource> s = sourceSnapshot.docs.map((doc) => ArticleSource.fromFirestore(doc)).toList();
         List<Question> ques = questionSnapshot.docs.map((doc) => Question.fromFirestore(doc)).toList();
@@ -84,9 +91,7 @@ class FirestoreService {
 
         print(ques);
         articles.add(Article.fromFirestore(doc, source, ques));
-
       }
-
       print(articles[0].title);
       print(articles[1].title);
       print(articles[2].title);
@@ -104,7 +109,20 @@ class FirestoreService {
     try {
       print("in try");
       DocumentReference dateDoc = ref.doc(date);
-      DocumentReference articleDoc = await dateDoc.collection('arts').add(article.toMap());
+      CollectionReference artsCollection = dateDoc.collection('arts');
+
+      // Check if the article already exists by title or unique identifier
+      QuerySnapshot existingArticles = await artsCollection
+          .where("id", isEqualTo: article.id)
+          .get();
+
+      if (existingArticles.docs.isNotEmpty) {
+        print("Article already exists in Firestore: ${article.title}");
+        return; // Stop duplicate insertion
+      }
+      DocumentReference articleDoc = await artsCollection.add(article.toMap());
+
+
       String articleId = articleDoc.id;
       await articleDoc.update({"id": articleId});
 

@@ -28,7 +28,7 @@ class CustomListTile extends StatelessWidget {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10.0),
-          color: Color(bgColors[carouselIndex]),
+          color: Color(homeTileColors[carouselIndex]),
         ),
         padding: const EdgeInsets.symmetric(
             vertical: 8.0),

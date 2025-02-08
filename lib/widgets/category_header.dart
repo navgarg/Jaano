@@ -37,7 +37,7 @@ class _CategoryHeaderState extends State<CategoryHeader> {
               padding: const EdgeInsets.symmetric(
                   vertical: 5.0, horizontal: 10.0),
               decoration: BoxDecoration(
-                color: Color(bgColors[widget.index]),
+                color: Color(categoryHeaderColors[widget.index]),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(

@@ -80,7 +80,7 @@ class _CheckAnsScreen extends ConsumerState<CheckAnsScreen> {
                     child: Container(
                       height: MediaQuery.of(context).size.height * 0.70,
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(colors: [Color(bgColors[widget.index]).withOpacity(0.5), Color(bgColors[widget.index]).withOpacity(0.5)]),
+                        gradient: LinearGradient(colors: [Color(overlayColors[widget.index]).withOpacity(0.5), Color(overlayColors[widget.index]).withOpacity(0.5)]),
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                       child: Column(
@@ -125,7 +125,7 @@ class _CheckAnsScreen extends ConsumerState<CheckAnsScreen> {
                           child: Container(
                             height: MediaQuery.of(context).size.height * 0.33,
                             decoration: BoxDecoration(
-                              gradient: LinearGradient(colors: [Color(bgColors[widget.index]), Color(bgColors[widget.index])]),
+                              gradient: LinearGradient(colors: [Color(textBoxColors[widget.index]), Color(textBoxColors[widget.index])]),
                               border: Border.all(color: Colors.white, width: 1.0),
                               borderRadius: BorderRadius.circular(10.0),
                               boxShadow: [

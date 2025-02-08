@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:jaano/services/article_api_service.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import '../services/firestore_service.dart';
 import '../models/article_model.dart';
@@ -15,10 +16,17 @@ class ArticlesNotifier extends StateNotifier<AsyncValue<List<Article>>> {
 
   // Fetch articles (example placeholder for actual fetch logic)
   Future<void> fetchArticles(Categories selectedCategory) async {
+    // if (state.isRefreshing) return;
     FirestoreService client = FirestoreService();
+    state = const AsyncLoading();
     try {
-      state = const AsyncValue.loading();
       final articles = await client.getFirebaseArticles(selectedCategory);
+      // final articles = await ApiService().getArticle(selectedCategory);
+      if(articles.isEmpty){
+        print("request alr in prog");
+        state = const AsyncLoading();
+        return;
+      }
       final completedArticleIds = await client.getCompletedArticles("user.id"); //todo: update user id
       print("got completed articles");
       print(completedArticleIds);

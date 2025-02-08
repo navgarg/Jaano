@@ -47,127 +47,157 @@ class HomeScreen extends ConsumerWidget {
       articlesNotifier.fetchArticles(categories[newIndex]);
     });
 
-
-
     return Scaffold(
       body: SafeArea(
-        child: Stack(children: <Widget>[ //stack used since widgets are overlapping
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(homeBgImgs[carouselIndex]),
-                fit: BoxFit.cover,
+        child: Stack(
+          children: <Widget>[
+            //stack used since widgets are overlapping
+            Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(homeBgImgs[carouselIndex]),
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-          ),
-          Column(children: [
-            const SizedBox(
-              height: 5.0,
+            Column(
+              children: [
+                const SizedBox(
+                  height: 5.0,
+                ),
+                const DatePicker(),
+                const SizedBox(height: 10.0),
+                const Carousel(),
+                Expanded(
+                  child: articlesState.when(
+                    loading: () {
+                      // print(
+                      //     '🔄 AsyncLoading state detected! Showing shimmer...');
+                      return const ShimmerPlaceholder();
+                    }, // Use shimmer during loading
+                    data: (articles) {
+                      // print('Fetched articles: ${articles.length}');
+                      // print('State refreshing: ${articlesState.isRefreshing}');
+                      // print('🟢 Data received: ${articles.length} articles');
+                      // print('State type: ${articlesState.runtimeType}');
+
+                      // Track whether we were in a loading state before receiving empty data
+                      // final wasLoadingBefore = ref.read(articlesProvider.notifier).wasLoadingBefore;
+                      //
+                      // if (articles.isEmpty && wasLoadingBefore) {
+                      //   print('⏳ Previously loading, keeping shimmer...');
+                      //   return const ShimmerPlaceholder();
+                      // }
+
+                      if (articles.isEmpty) {
+                        return const Center(
+                            child: Text('No articles available.'));
+                      }
+
+                      // if (articles.isEmpty && ref.read(articlesProvider) is AsyncLoading) {
+                      //   return const ShimmerPlaceholder(); // Show shimmer instead of "No articles available"
+                      // }
+                      //
+                      // if (articles.isEmpty) {
+                      //   return const Center(
+                      //     child: Text('No articles available.'),
+                      //   );
+                      // }
+                      // Initialize expanded panels
+                      // WidgetsBinding.instance.addPostFrameCallback((_) {
+                      //   if (expandedPanels.isEmpty || expandedPanels.length != articles.length) {
+                      //     ref.read(expandedPanelsProvider.notifier)
+                      //         .initialize(articles.length);
+                      //   }
+                      // });
+                      if (expandedPanels.isEmpty ||
+                          expandedPanels.length != articles.length) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          ref
+                              .read(expandedPanelsProvider.notifier)
+                              .initialize(articles.length);
+                        });
+                      }
+
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 16.0, horizontal: 16.0),
+                        child: ListView.builder(
+                          itemCount: articles.length,
+                          itemBuilder: (context, index) {
+                            final article = articles[index];
+                            // final isExpanded = expandedPanels[index];
+
+                            return Column(
+                              children: [
+                                // Container(
+                                //   height:
+                                //   MediaQuery
+                                //       .of(context)
+                                //       .size
+                                //       .height * 0.18,
+                                //   alignment: Alignment.center,
+                                //   decoration: BoxDecoration(
+                                //     borderRadius: BorderRadius.circular(10.0),
+                                //     color: Color(bgColors[carouselIndex]),
+                                //   ),
+                                //   padding: const EdgeInsets.symmetric(
+                                //       vertical: 8.0, horizontal: 16.0),
+                                //   child: ListTile(
+                                //     leading: Image.asset('assets/circuit.png'),
+                                //     title: Text(
+                                //       article.title,
+                                //       style: const TextStyle(
+                                //         fontSize: 16.0,
+                                //         color: Colors.black,
+                                //         fontWeight: FontWeight.w500,
+                                //       ),
+                                //       maxLines: 4,
+                                //       overflow: TextOverflow.ellipsis,
+                                //     ),
+                                //     trailing: article.isCompleted
+                                //         ? const Icon(Icons.check_circle_outline)
+                                //         : const Icon(Icons.navigate_next_rounded),
+                                //     onTap: () {
+                                //       Navigator.push(
+                                //           context,
+                                //           MaterialPageRoute(
+                                //               builder: (context) =>
+                                //                   ExpandedArticleScreen(
+                                //                     article: article,
+                                //                     articlesNotifier: articlesNotifier,
+                                //                     index: carouselIndex,
+                                //                   )));
+                                //     },
+                                //   ),
+                                // ),
+                                CustomListTile(
+                                    article: article,
+                                    carouselIndex: carouselIndex,
+                                    articlesNotifier: articlesNotifier),
+                                // Add spacing below each panel
+                                const SizedBox(height: 16.0),
+                              ],
+                            );
+                          },
+                        ),
+                      );
+                    },
+                    error: (e, _) => Center(child: Text('Error: $e')),
+                  ),
+                ),
+              ],
             ),
-
-            const DatePicker(),
-
-            const SizedBox(height: 10.0),
-
-            const Carousel(),
-
-            Expanded(
-              child: articlesState.when(
-                data: (articles) {
-                  if (articles.isEmpty) {
-                    return const Center(
-                      child: Text('No articles available.'),
-                    );
-                  }
-                  // Initialize expanded panels
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (expandedPanels.isEmpty ||
-                        expandedPanels.length != articles.length) {
-                      ref
-                          .read(expandedPanelsProvider.notifier)
-                          .initialize(articles.length);
-                    }
-                  });
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 16.0, horizontal: 16.0),
-                    child: ListView.builder(
-                      itemCount: articles.length,
-                      itemBuilder: (context, index) {
-                        final article = articles[index];
-                        // final isExpanded = expandedPanels[index];
-
-                        return Column(
-                          children: [
-                            // Container(
-                            //   height:
-                            //   MediaQuery
-                            //       .of(context)
-                            //       .size
-                            //       .height * 0.18,
-                            //   alignment: Alignment.center,
-                            //   decoration: BoxDecoration(
-                            //     borderRadius: BorderRadius.circular(10.0),
-                            //     color: Color(bgColors[carouselIndex]),
-                            //   ),
-                            //   padding: const EdgeInsets.symmetric(
-                            //       vertical: 8.0, horizontal: 16.0),
-                            //   child: ListTile(
-                            //     leading: Image.asset('assets/circuit.png'),
-                            //     title: Text(
-                            //       article.title,
-                            //       style: const TextStyle(
-                            //         fontSize: 16.0,
-                            //         color: Colors.black,
-                            //         fontWeight: FontWeight.w500,
-                            //       ),
-                            //       maxLines: 4,
-                            //       overflow: TextOverflow.ellipsis,
-                            //     ),
-                            //     trailing: article.isCompleted
-                            //         ? const Icon(Icons.check_circle_outline)
-                            //         : const Icon(Icons.navigate_next_rounded),
-                            //     onTap: () {
-                            //       Navigator.push(
-                            //           context,
-                            //           MaterialPageRoute(
-                            //               builder: (context) =>
-                            //                   ExpandedArticleScreen(
-                            //                     article: article,
-                            //                     articlesNotifier: articlesNotifier,
-                            //                     index: carouselIndex,
-                            //                   )));
-                            //     },
-                            //   ),
-                            // ),
-                            CustomListTile(article: article, carouselIndex: carouselIndex, articlesNotifier: articlesNotifier),
-                            // Add spacing below each panel
-                            const SizedBox(height: 16.0),
-                          ],
-                        );
-                      },
-                    ),
-                  );
-                },
-                loading: () =>
-                const ShimmerPlaceholder(), // Use shimmer during loading
-                error: (e, _) => Center(child: Text('Error: $e')),
-              ),
+            BottomNavbar(
+              carouselIndex: carouselIndex,
             ),
           ],
-          ),
-          BottomNavbar(carouselIndex: carouselIndex,),
-        ],
         ),
       ),
     );
-
   }
 }
-//todo: what if multiple queries at the same time? filter unique elements? or fix time to send query independently
-
 //todo: make separate single text style to be used across app for uniformity.
-
 
 //greyed and locked icons for other categories.
 //other categories unlocked only by completing the prev category.
@@ -175,8 +205,6 @@ class HomeScreen extends ConsumerWidget {
 //rings are empty when new category is started
 
 //scroll automatically to follow highlighted text
-
-//article read state should be maintained - add user activity to firebase
 
 //natural audio from tts. store in firebase.
 

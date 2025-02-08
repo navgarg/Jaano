@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:jaano/constants.dart';
@@ -8,9 +10,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ApiService {
   final client = http.Client();
+  static bool _isFetching = false;
 
   ///Make HTTP request and get news articles from API
   Future<List<Article>> getArticle(Categories cat) async {
+    if (_isFetching) {
+      print("Request already in progress. Returning.");
+      return []; // Prevent multiple requests
+    }
+
+    _isFetching = true; // Set flag to indicate request is in progress
+    print("Fetching articles from API...");
+
+
+    try{
     final uri = Uri.https(baseUrl, newsUrl);
     final response = await client.get(uri);
     var json = jsonDecode(response.body);
@@ -27,7 +40,12 @@ class ApiService {
     }
 
     List<Article> arts = articles.where((art) => art.category == cat).toList();
-
     return arts;
+    } catch (e) {
+      print("Error fetching articles: $e");
+      return [];
+    } finally {
+      _isFetching = false; // Reset flag after request completes
+    }
   }
 }
