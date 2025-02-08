@@ -30,7 +30,7 @@ class PointsContainer extends StatelessWidget {
         children: [
           Image.asset(
               icon,
-              height: 35,
+              height: 40,
           ),
           SizedBox(width: MediaQuery.of(context).size.width * 0.01),
           TweenAnimationBuilder<int>(

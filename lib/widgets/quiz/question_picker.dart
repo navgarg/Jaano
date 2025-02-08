@@ -59,11 +59,11 @@ class _QuestionPickerState extends ConsumerState<QuestionPicker> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    "Question $currQues",
+                    "QUESTION $currQues",
                     style: const TextStyle(
                       fontSize: 12.0,
                       fontWeight: FontWeight.w500,
-                      color: Colors.black,
+                      color: Colors.white,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -90,7 +90,7 @@ class _QuestionPickerState extends ConsumerState<QuestionPicker> {
           ),
         ),
         const SizedBox(
-          height: 20.0,
+          height: 10.0,
         ),
       ],
     );

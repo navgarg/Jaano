@@ -4,6 +4,7 @@ import 'package:speech_to_text/speech_to_text.dart';
 import '../services/firestore_service.dart';
 import '../models/article_model.dart';
 import '../constants.dart';
+import 'claude_api_service.dart';
 import 'speech_state.dart';
 
 final articlesProvider =
@@ -18,7 +19,16 @@ class ArticlesNotifier extends StateNotifier<AsyncValue<List<Article>>> {
     try {
       state = const AsyncValue.loading();
       final articles = await client.getFirebaseArticles(selectedCategory);
-      state = AsyncValue.data(articles); // Update the state with fetched articles
+      final completedArticleIds = await client.getCompletedArticles("user.id"); //todo: update user id
+      print("got completed articles");
+      print(completedArticleIds);
+      final updatedArticles = articles.map((article) {
+        return article.copyWith(
+          isCompleted: completedArticleIds.contains(article.id),
+        );
+      }).toList();
+      print(updatedArticles);
+      state = AsyncValue.data(updatedArticles); // Update the state with fetched articles
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }
@@ -36,6 +46,7 @@ class ArticlesNotifier extends StateNotifier<AsyncValue<List<Article>>> {
             title: article.title,
             category: article.category,
             description: article.description,
+            id: article.id,
             url: article.url,
             urlToImage: article.urlToImage,
             publishedAt: article.publishedAt,

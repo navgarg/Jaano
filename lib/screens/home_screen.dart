@@ -174,10 +174,6 @@ class HomeScreen extends ConsumerWidget {
 //when tech completed, economy is highlighted.
 //rings are empty when new category is started
 
-//here's a question for you. questions is spoken out.
-
-//different voices for reading - explore. - best possible method using android.
-//online tts - (download the audio and store in db) vs device tts.
 //scroll automatically to follow highlighted text
 
 //article read state should be maintained - add user activity to firebase
@@ -185,5 +181,6 @@ class HomeScreen extends ConsumerWidget {
 //natural audio from tts. store in firebase.
 
 //online tts - how? send request everyday and store in firebase? whisper.
-//add category for ques screen too
 //diff icon for mic button
+
+//make shadow inner instead of outer

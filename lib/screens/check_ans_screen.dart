@@ -4,14 +4,18 @@ import 'package:jaano/services/riverpod_providers.dart';
 import 'package:jaano/widgets/category_header.dart';
 
 import '../constants.dart';
+import '../models/article_model.dart';
+import '../services/firestore_service.dart';
 import '../widgets/navbar/bottom_navbar.dart';
 import '../widgets/quiz/question_picker.dart';
 
 class CheckAnsScreen extends ConsumerStatefulWidget {
+  final Article article;
+  final int quesIndex;
   final int index;
   final AnswerData answerData;
   const CheckAnsScreen(
-      {super.key, required this.index, required this.answerData});
+      {super.key, required this.index, required this.answerData, required this.article, required this.quesIndex});
 
   @override
   ConsumerState<CheckAnsScreen> createState() => _CheckAnsScreen();
@@ -26,10 +30,28 @@ class _CheckAnsScreen extends ConsumerState<CheckAnsScreen> {
     WidgetsBinding.instance.addPostFrameCallback( (_) {
       final quizPointsState = ref.read(
           quizPointsProvider("user.id").notifier); //todo: update userid
+      int qps;
       if (widget.answerData.rating > 5) {
         print("added qps");
         quizPointsState.addPoints(50);
+        qps = 50;
       }
+      else {
+        qps = 0;
+      }
+      final FirestoreService _firestoreService = FirestoreService();
+      _firestoreService.logUserAction("user.id", "quiz_attempted", extraData: {
+        "category": widget.article.category.toString(),
+        "title": widget.article.title,
+        "question": widget.article.questions![widget.quesIndex].question,
+        "feedback": widget.answerData.feedback,
+        "rating": widget.answerData.rating,
+        "qps earned": qps,
+        "articleId": widget.article.id,
+      });
+      print("log quiz attempted");
+      print("qps earned");
+      print(qps);
     });
   }
 
@@ -139,7 +161,7 @@ class _CheckAnsScreen extends ConsumerState<CheckAnsScreen> {
             left: 0,
             right: 0,
             child: AnimatedSlide(
-              offset: const Offset(0, 0), //todo: update
+              offset: const Offset(0, 0),
               duration: const Duration(milliseconds: 200), // Smooth sliding
               curve: Curves.easeInOut,
               child: Align(

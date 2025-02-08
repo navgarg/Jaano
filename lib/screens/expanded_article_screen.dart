@@ -12,6 +12,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
 import '../models/article_model.dart';
+import '../services/firestore_service.dart';
 import '../services/riverpod_providers.dart';
 
 class ExpandedArticleScreen extends ConsumerStatefulWidget {
@@ -136,7 +137,6 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
         print(widget.article.title);
         categoryManager.addCompletedArticle(widget.article.category);
         widget.articlesNotifier.completeArticle(widget.article);
-        //todo: add animation for reading points.
       });
     });
   }
@@ -210,6 +210,15 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
         "Good job finishing the article! Here are 50 reading points for you.");
     final readingPointsState = ref.read(readingPointsProvider("user.id").notifier); //todo: change user id
     readingPointsState.addPoints(50);
+    final FirestoreService _firestoreService = FirestoreService();
+    _firestoreService.logUserAction("user.id", "article_completed", extraData: {
+      "category": article.category.toString(),
+      "title": article.title,
+      "articleId": article.id,
+    });
+    print("log - article completed");
+    print("category");
+    print(article.category.toString());
 
     start = 0;
     end = 0;
@@ -244,7 +253,7 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
             decoration: BoxDecoration(
               image: DecorationImage(
                 image:
-                    AssetImage(expdBgImgs[widget.index]), //todo: update bg img
+                    AssetImage(expdBgImgs[widget.index]),
                 fit: BoxFit.cover,
               ),
             ),
@@ -520,7 +529,6 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
 }
 
 //todo:
-//change imgs for background to show different categories
 //if you swipe right/left, category is changed
 //control font size irrespective of device settings.
 

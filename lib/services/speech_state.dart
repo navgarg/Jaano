@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../models/article_model.dart';
+import 'firestore_service.dart';
 import 'riverpod_providers.dart';
 
 class SpeechState {
@@ -11,7 +12,7 @@ class SpeechState {
 
   SpeechState({
     this.speechEnabled = false,
-    this.wordsSpoken = "",
+    this.wordsSpoken = "Answer here",
     this.isListening = false,
     this.isProcessing = false,
   });
@@ -70,25 +71,20 @@ class SpeechStateNotifier extends StateNotifier<SpeechState> {
     final answerNotifier = ref.read(answerProvider.notifier);
     if(state.wordsSpoken.isNotEmpty) {
       answerNotifier.checkAnswer(article, state.wordsSpoken, index);
+      final FirestoreService _firestoreService = FirestoreService();
+      _firestoreService.logUserAction("user.id", "quiz_attempted", extraData: {
+        "category": article.category.toString(),
+        "title": article.title,
+        "question": article.questions![index].question,
+        "answer": state.wordsSpoken,
+        "articleId": article.id,
+      });
+      print("log - quiz attempted");
+      print("words spoken: ${state.wordsSpoken}");
     }
     else{
       Fluttertoast.showToast(msg: "Please provide an answer. ", toastLength: Toast.LENGTH_LONG);
       state = state.copyWith(isProcessing: false);
     }
-    // if (state.wordsSpoken == article.questions![index].answer) {
-    //   Fluttertoast.showToast(
-    //     msg: "correct!",
-    //     toastLength: Toast.LENGTH_SHORT,
-    //   );
-    //       print("correct");
-    //     }
-    //     else{
-    //
-    //   Fluttertoast.showToast(
-    //     msg: "wrong",
-    //     toastLength: Toast.LENGTH_SHORT,
-    //   );
-    //       print("wrong");
-    //     }
   }
 }

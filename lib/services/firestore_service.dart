@@ -105,6 +105,8 @@ class FirestoreService {
       print("in try");
       DocumentReference dateDoc = ref.doc(date);
       DocumentReference articleDoc = await dateDoc.collection('arts').add(article.toMap());
+      String articleId = articleDoc.id;
+      await articleDoc.update({"id": articleId});
 
       print("Added article");
       await articleDoc.collection('source').add(article.source.toMap());
@@ -121,5 +123,40 @@ class FirestoreService {
     }
   }
 
+  Future<void> logUserAction(String userId, String actionType, {Map<String, dynamic>? extraData}) async {
+    String date = DateTime.now().toLocal().toString().split(' ')[0]; // Get YYYY-MM-DD
+    String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+
+    Map<String, dynamic> logEntry = {
+      "timestamp": FieldValue.serverTimestamp(),
+      "action": actionType,
+      "extraData": extraData ?? {},
+    };
+
+    await _db.collection('users').doc(userId)
+        .collection('activity').doc(date) // Create a document for the day
+        .collection('events').doc(timestamp) // Store logs inside "events"
+        .set(logEntry);
+  }
+
+  Future<List<String>> getCompletedArticles(String userId) async {
+    String date = DateTime.now().toLocal().toString().split(' ')[0]; // YYYY-MM-DD
+    List<String> completedArticles = [];
+
+    QuerySnapshot logSnapshots = await _db
+        .collection('users')
+        .doc(userId)
+        .collection('activity')
+        .doc(date)
+        .collection('events')
+        .where("action", isEqualTo: "article_completed")
+        .get();
+
+    for (var doc in logSnapshots.docs) {
+      completedArticles.add((doc['extraData'] as Map<String, dynamic>?)?['articleId']); // Assuming articleId is stored in logs
+    }
+
+    return completedArticles;
+  }
 
 }

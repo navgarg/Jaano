@@ -6,7 +6,6 @@ class ShimmerImgPlaceholder extends StatelessWidget {
   Article article;
   ShimmerImgPlaceholder({required this.article, super.key});
 
-  //todo: size of shimmer goes above size of img.
   @override
   Widget build(BuildContext context) {
     return Center(

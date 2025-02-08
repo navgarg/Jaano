@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jaano/screens/home_screen.dart';
+import 'package:jaano/services/firestore_service.dart';
 
 import 'firebase_options.dart';
 
@@ -15,16 +16,38 @@ Future<void> main() async {
   );
   FirebaseFirestore.instance.settings = const Settings(persistenceEnabled: true);
   runApp(
-    const ProviderScope( // Wrap the app with ProviderScope
+    ProviderScope( // Wrap the app with ProviderScope
       child: MyApp(),
     ),
   );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
 
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  final FirestoreService _firestoreService = FirestoreService();
+  final String userId = "user.id"; //todo: Get actual user ID from auth
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    logAppOpen();
+  }
+
+  void logAppOpen() {
+    _firestoreService.logUserAction(userId, "app_opened");
+    print("log - app opened");
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
   // This widget is the root of your application.
   @override

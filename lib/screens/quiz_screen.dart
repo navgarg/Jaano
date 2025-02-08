@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:intl/intl.dart';
 import 'package:jaano/services/riverpod_providers.dart';
+import 'package:jaano/widgets/category_header.dart';
 import 'package:jaano/widgets/quiz/question_picker.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
@@ -97,6 +98,9 @@ class _QuizScreen extends ConsumerState<QuizScreen>
   @override
   Widget build(BuildContext context) {
 
+    final currQues = ref.watch(questionIndexProvider);
+    final speechState = ref.watch(speechStateProvider);
+    final speechNotifier = ref.read(speechStateProvider.notifier);
     ref.listen(answerProvider, (previous, next) {
       if (next.isLoading && !isProcessingDialogOpen) {
         isProcessingDialogOpen = true; // Mark dialog as open
@@ -105,7 +109,7 @@ class _QuizScreen extends ConsumerState<QuizScreen>
         });
       } else if (next.value != null) {
         Future.delayed(Duration.zero, () {
-          if (mounted) { //todo: add check here to ensure dialog opens only after click.
+          if (mounted) {
             if (isProcessingDialogOpen) {
               // Ensure processing dialog is closed first
               Navigator.of(context, rootNavigator: true).pop();
@@ -115,6 +119,8 @@ class _QuizScreen extends ConsumerState<QuizScreen>
             Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => CheckAnsScreen(
+                  quesIndex: currQues - 1,
+                  article: widget.article,
                   index: widget.index,
                   answerData: next.value!,
                 ),
@@ -126,9 +132,6 @@ class _QuizScreen extends ConsumerState<QuizScreen>
     });
 
     print("in build for quiz");
-    final currQues = ref.watch(questionIndexProvider);
-    final speechState = ref.watch(speechStateProvider);
-    final speechNotifier = ref.read(speechStateProvider.notifier);
 
     if (speechState.isListening) {
       _controller.repeat(reverse: true);
@@ -143,7 +146,7 @@ class _QuizScreen extends ConsumerState<QuizScreen>
             decoration: BoxDecoration(
               image: DecorationImage(
                 image:
-                    AssetImage(expdBgImgs[widget.index]), //todo: update bg img
+                    AssetImage(expdBgImgs[widget.index]),
                 fit: BoxFit.cover,
               ),
             ),
@@ -159,8 +162,12 @@ class _QuizScreen extends ConsumerState<QuizScreen>
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  ///category header
+                  CategoryHeader(index: widget.index,),
+                  const SizedBox(height: 30),
+
                   ///question picker
-                  QuestionPicker(index: widget.index),
+                  QuestionPicker(index: widget.index), //todo: add container color to arrows too
                   ///image
                   ShimmerImgPlaceholder(article: widget.article),
                   const SizedBox(height: 30),
@@ -213,7 +220,7 @@ class _QuizScreen extends ConsumerState<QuizScreen>
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16.0),
                             child: Text(
-                              speechState.wordsSpoken,
+                              speechState.wordsSpoken, //todo: check??
                               style: const TextStyle(
                                 color: Color(0xFF090438),
                                 fontSize: 18.0,
