@@ -32,7 +32,7 @@ class ArticlesNotifier extends StateNotifier<AsyncValue<List<Article>>> {
       print(completedArticleIds);
       final updatedArticles = articles.map((article) {
         return article.copyWith(
-          isCompleted: completedArticleIds.contains(article.id),
+          isCompleted: completedArticleIds.contains(article.articleId),
         );
       }).toList();
       print(updatedArticles);
@@ -49,15 +49,14 @@ class ArticlesNotifier extends StateNotifier<AsyncValue<List<Article>>> {
         if (article == art) {
           return Article(
             source: article.source,
-            author: article.author,
             questions: article.questions,
             title: article.title,
             category: article.category,
             description: article.description,
-            id: article.id,
-            url: article.url,
-            urlToImage: article.urlToImage,
-            publishedAt: article.publishedAt,
+            articleId: article.articleId,
+            articleLink: article.articleId,
+            imageLink: article.imageLink,
+            publishedDate: article.publishedDate,
             content: article.content,
             isCompleted: true, // Change only this field
           );

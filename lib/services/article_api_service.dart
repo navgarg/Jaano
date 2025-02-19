@@ -28,8 +28,9 @@ class ApiService {
     final response = await client.get(uri);
     var json = jsonDecode(response.body);
     // Map<String, dynamic> json = jsonDecode(response.body);
-    List<dynamic> body = json['articles'];
+    List<dynamic> body = json['results'];
 
+    print(body);
     ///retrieve and store articles in list of type article.
     // List<Article> articles = List<Article>.from(body.map((e) async => await Article.fromJson(e)).toList());
     List<Article> articles = await Future.wait(body.map((e) async => Article.fromJson(e)).toList());
@@ -40,6 +41,8 @@ class ApiService {
     }
 
     List<Article> arts = articles.where((art) => art.category == cat).toList();
+    print("article rcvd successfully");
+    print(arts);
     return arts;
     } catch (e) {
       print("Error fetching articles: $e");

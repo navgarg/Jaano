@@ -15,7 +15,7 @@ const String API_KEY = "4ec0bca1845443259827bcee48f9f1fe";
 const String Claude_baseUrl = 'https://api.anthropic.com/v1/messages';
 // const String newsUrl = "/v2/top-headlines";
 const String baseUrl = "raw.githubusercontent.com";
-const String newsUrl = "/navgarg/Loose-Files/master/jaano_newsdata.json";
+const String newsUrl = "/navgarg/Loose-Files/master/jaano_newsdata.io_data.json"; //todo: change url
 final List<String> homeBgImgs = [
   "assets/economy/eco_bg.png",
   "assets/nature/nat_bg.png",
@@ -32,6 +32,7 @@ final List<String> expdBgImgs = [
   "assets/sports/sport_expanded_bg.png",
   "assets/tech/tech_expanded_bg.png"
 ];
+
 final catIcons0 = [
   "assets/economy/eco_3.png",
   "assets/nature/nat_3.png",
@@ -64,6 +65,7 @@ final catIcons1 = [
   "assets/sports/sport_1.png",
   "assets/tech/tech_1.png"
 ];
+
 final List<String> quizIcons = [
   "assets/economy/eco_quiz.png",
   "assets/nature/nat_quiz.png",
@@ -96,11 +98,12 @@ final List<String> speechIcons = [
   "assets/sports/sport_speech.png",
   "assets/tech/tech_speech.png"
 ];
-final labels = ["Economy", "Nature", "Food", "Science", "Sports", "Tech"];
+
+final labels = ["Business", "Nature", "Health", "Science", "Sports", "Tech"];
 final categories = [
-  Categories.economy,
-  Categories.nature,
-  Categories.food,
+  Categories.business,
+  Categories.environment,
+  Categories.health,
   Categories.science,
   Categories.sports,
   Categories.technology
@@ -120,12 +123,11 @@ final List<int> bgColors = [
   ///tech
   0xFFCFC4FF,
 ];
-
 final List<int> homeTileColors = [
   ///economy background color
-  0xFF90FFE5,
+  0xFF9AE9D6,
   ///nature
-  0xFFADE98D,
+  0xFF9DD296,
   ///food
   0xFFF7D596,
   ///science

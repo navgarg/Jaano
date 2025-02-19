@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:intl/intl.dart';
 import 'package:jaano/screens/expanded_article_screen.dart';
+import 'package:jaano/services/claude_api_service.dart';
 import 'package:jaano/widgets/navbar/bottom_navbar.dart';
 import 'package:jaano/widgets/carousel.dart';
 import 'package:jaano/widgets/date_picker.dart';
@@ -23,6 +24,8 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Watch providers
     final carouselIndex = ref.watch(carouselIndexProvider);
+    // print("summary");
+    // getClaudeQuestions("Apple is working on a new iPhone called the iPhone SE 4! It's going to be smaller than the regular iPhones, making it easier for little hands to hold. The exciting part is that it will have the same powerful chip as the more expensive iPhones, so you can play games and use apps just as smoothly. It might also have a better camera for taking sharper photos and videos. The body of the iPhone SE 4 could be made of tougher materials to prevent scratches and cracks if you accidentally drop it. Apple is aiming to launch this new iPhone by early next year, so you may get to see it soon!");
     // final articles = ref.watch(articlesProvider);
     final articlesNotifier = ref.read(articlesProvider.notifier);
     final articlesState = ref.watch(articlesProvider);

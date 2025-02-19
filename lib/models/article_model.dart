@@ -6,26 +6,35 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../services/claude_api_service.dart';
 
 class ArticleSource{
-  String name;
+  String? name;
   String? id;
+  String? url;
+  String? urlToIcon;
 
-  ArticleSource({required this.id, required this.name});
+  ArticleSource({
+    required this.id,
+    required this.name,
+    required this.url,
+    required this.urlToIcon,
+  });
 
   factory ArticleSource.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
 
-    return ArticleSource(id: data['id'] ?? "", name: data['name'] ?? "");
+    return ArticleSource(id: data['id'] ?? "", name: data['name'] ?? "", url: data['url'] ?? "", urlToIcon: data['urlToIcon'] ?? "");
   }
 
   Map<String, dynamic> toMap() {
     return {
       'name': name,
       'id': id,
+      'url': url,
+      'urlToIcon': urlToIcon,
     };
   }
 
   factory ArticleSource.fromJson(Map<String, dynamic> json){
-    return ArticleSource(id: json["id"], name: json["name"]);
+    return ArticleSource(id: json["source_id"], name: json["source_name"], url: json["source_url"], urlToIcon: json["source_icon"]);
   }
 }
 
@@ -53,7 +62,7 @@ class Question{
   }
 }
 ///predefined categories, to avoid confusion with strings
-enum Categories {economy, technology, sports, science, food, nature, other;
+enum Categories {business, technology, sports, science, health, environment, other;
 }
 
 class CategoryManager {
@@ -75,30 +84,27 @@ class CategoryManager {
 }
 
 class Article {
-  //todo: record activity of user in every session
   List<Question>? questions;
-  ArticleSource source;
-  String? author;
-  Categories category;
   String title;
+  String articleLink;
   String? description;
-  String? url;
-  String? urlToImage;
-  final String id;
-  String? publishedAt;
   String? content;
+  String? publishedDate;
+  String? imageLink;
   bool isCompleted;
+  Categories category;
+  ArticleSource source;
+  String articleId;
   Article(
       {required this.source,
-        required this.author,
         required this.questions,
         required this.title,
         required this.category,
-        required this.id,
         required this.description,
-        required this.url,
-        required this.urlToImage,
-        required this.publishedAt,
+        required this.articleLink,
+        required this.imageLink,
+        required this.publishedDate,
+        required this.articleId,
         required this.content,
         required this.isCompleted,
       });
@@ -115,16 +121,14 @@ class Article {
 
     return Article (
         source: source,
-        id: data["id"] ?? art.id,
-        author: data['author'] ?? "",
+        articleId: data["article_id"] ?? art.id,
         questions: questions,
         title: data['title'] ?? "",
         category: cat,
-        // status:,
         description: data['description'] ?? "",
-        url: data['url'] ?? "",
-        urlToImage: data['urlToImage'] ?? "",
-        publishedAt: data['publishedAt'] ?? "",
+        articleLink: data['articleLink'] ?? "",
+        imageLink: data['imageLink'] ?? "",
+        publishedDate: data['publishedDate'] ?? "",
         content: data['content'] ?? "",
         isCompleted: false,
     );
@@ -132,41 +136,38 @@ class Article {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
+      'article_id': articleId,
       'title': title,
       'content': content,
-      'author': author,
       'category': category.toString(),
       'description': description,
-      'url': url,
-      'urlToImage': urlToImage,
-      'publishedAt': publishedAt,
+      'articleLink': articleLink,
+      'imageLink': imageLink,
+      'publishedDate': publishedDate,
     };
   }
 
   Article copyWith({
-    String? id,
+    String? articleId,
     ArticleSource? source,
-    String? author,
     String? title,
     String? description,
-    String? url,
-    String? urlToImage,
-    String? publishedAt,
+    String? articleLink,
+    String? imageLink,
+    String? publishedDate,
     String? content,
     List<Question>? questions,
     Categories? category,
     bool? isCompleted,
   }) {
     return Article(
-      id: id ?? this.id,
+      articleId: articleId ?? this.articleId,
       source: source ?? this.source,
-      author: author ?? this.author,
       title: title ?? this.title,
       description: description ?? this.description,
-      url: url ?? this.url,
-      urlToImage: urlToImage ?? this.urlToImage,
-      publishedAt: publishedAt ?? this.publishedAt,
+      articleLink: articleId ?? this.articleLink,
+      imageLink: imageLink ?? this.imageLink,
+      publishedDate: publishedDate ?? this.publishedDate,
       content: content ?? this.content,
       questions: questions ?? this.questions,
       category: category ?? this.category,
@@ -176,32 +177,44 @@ class Article {
 
     ///this method is only called if data for the day is not already present in firebase.
   static Future<Article> fromJson(Map<String, dynamic> json) async {
+    print("in fromJson");
     Categories cat;
     try{
-      cat = Categories.values.firstWhere((e) => e.toString() == 'Categories.' + json['category']);
+      cat = Categories.values.firstWhere((e) => e.toString() == 'Categories.' + json['category'][0]);
     }
     catch (e) {
       cat = Categories.other;
     }
+    print(cat);
 
-    String? resp = await getClaudeSummary(json['url'] as String);
+    String? resp = await getClaudeSummary(json['link'] as String);
+    print("summary");
+    print(resp);
+    print("summary");
     List<Question> quests = await getClaudeQuestions(resp);
     print(quests);
     print("run");
+    print(json["title"]);
+    print(json["description"]);
+    print(json["link"]);
+    print(json["image_url"]);
+    print(json["pubDate"]);
+    print(resp);
+    print(json["article_id"]);
+    print(quests);
+    print(cat);
 
     return Article(
-        source: ArticleSource.fromJson(json['source']),
-        author: json['author'],
+        source: ArticleSource.fromJson(json),
         title: json['title'],
         description: json['description'],
-        url: json['url'],
-        urlToImage: json['urlToImage'],
-        publishedAt: json['publishedAt'],
+        articleLink: json['link'],
+        imageLink: json['image_url'],
+        publishedDate: json['pubDate'],
         content: resp,
-        id: const Uuid().v4(),
-        // status: Status.incomplete,
+        articleId: json["article_id"],
         questions: quests,
-        category: cat, //todo: update wrt new json data
+        category: cat,
         isCompleted: false
       );
     }

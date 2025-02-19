@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jaano/screens/expanded_article_screen.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../constants.dart';
 import '../models/article_model.dart';
@@ -35,7 +36,25 @@ class CustomListTile extends StatelessWidget {
         child: Row(
           children: [
             SizedBox(width: width * 0.005,),
-            Image.asset("assets/circuit.png", width: width * 0.25,),
+                // Actual image
+                Image.network(
+                  fit: BoxFit.cover,
+                  width: width * 0.15, //todo: check
+                  article.source.urlToIcon.toString(),
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) {
+                      return child; /// Show the image once it's loaded
+                    }
+                    return Container();
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Text(
+                      'Error loading image',
+                      style: TextStyle(color: Colors.red),
+                    ); /// Handle errors gracefully
+                  },
+            ),
+            // Image.asset("assets/circuit.png", width: width * 0.25,),
             // SizedBox(width: width * 0.025,),
             Expanded(
                 child: Text(

@@ -77,7 +77,7 @@ class SpeechStateNotifier extends StateNotifier<SpeechState> {
         "title": article.title,
         "question": article.questions![index].question,
         "answer": state.wordsSpoken,
-        "articleId": article.id,
+        "articleId": article.articleId,
       });
       print("log - quiz attempted");
       print("words spoken: ${state.wordsSpoken}");
@@ -86,5 +86,8 @@ class SpeechStateNotifier extends StateNotifier<SpeechState> {
       Fluttertoast.showToast(msg: "Please provide an answer. ", toastLength: Toast.LENGTH_LONG);
       state = state.copyWith(isProcessing: false);
     }
+  }
+  void resetWordsSpoken() {
+    state = state.copyWith(wordsSpoken: "");
   }
 }

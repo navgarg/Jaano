@@ -56,13 +56,14 @@ class ClaudeApiService {
 }
 
 Future<String> getClaudeSummary (String link) async {
+  print("getting summary");
   final ClaudeApiService claudeService = ClaudeApiService(
     apiKey: dotenv.env['CLAUDE_API_KEY'] ?? " ",
   );
 
   try {
     final response = await claudeService.sendMessage(
-      content: "Summarize the news article given at the link: $link for a child in age group of 6-10 years. "
+      content: "Summarize the news article given at the link: $link for a child in age group of 9-12 years. "
           "Use easy to understand language and short sentences. "
           "Make it engaging and interesting, while keeping all main points intact. "
           "Do not go over 5-6 lines, however let it be at least 120 words. "
@@ -82,6 +83,7 @@ Future<String> getClaudeSummary (String link) async {
 }
 
 Future<List<Question>> getClaudeQuestions(String content) async {
+  print("getting questions");
   final ClaudeApiService claudeService = ClaudeApiService(
     apiKey: dotenv.env['CLAUDE_API_KEY'] ?? " ",
   );

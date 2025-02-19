@@ -26,7 +26,7 @@ class ShimmerImgPlaceholder extends StatelessWidget {
             Image.network(
               fit: BoxFit.cover,
               height: MediaQuery.of(context).size.height * 0.25,
-              article.urlToImage.toString(),
+              article.imageLink.toString(),
               loadingBuilder: (context, child, loadingProgress) {
                 if (loadingProgress == null) {
                   return child; /// Show the image once it's loaded

@@ -113,7 +113,7 @@ class FirestoreService {
 
       // Check if the article already exists by title or unique identifier
       QuerySnapshot existingArticles = await artsCollection
-          .where("id", isEqualTo: article.id)
+          .where("id", isEqualTo: article.articleId)
           .get();
 
       if (existingArticles.docs.isNotEmpty) {

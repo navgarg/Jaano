@@ -47,7 +47,7 @@ class _CheckAnsScreen extends ConsumerState<CheckAnsScreen> {
         "feedback": widget.answerData.feedback,
         "rating": widget.answerData.rating,
         "qps earned": qps,
-        "articleId": widget.article.id,
+        "articleId": widget.article.articleId,
       });
       print("log quiz attempted");
       print("qps earned");
@@ -78,7 +78,7 @@ class _CheckAnsScreen extends ConsumerState<CheckAnsScreen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 13.0),
                     child: Container(
-                      height: MediaQuery.of(context).size.height * 0.70,
+                      height: MediaQuery.of(context).size.height * 0.65,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(colors: [Color(overlayColors[widget.index]).withOpacity(0.5), Color(overlayColors[widget.index]).withOpacity(0.5)]),
                         borderRadius: BorderRadius.circular(10.0),
@@ -89,7 +89,7 @@ class _CheckAnsScreen extends ConsumerState<CheckAnsScreen> {
                       widget.answerData.rating > 5
                           ? "assets/correct_ans.png"
                           : "assets/wrong_ans.png",
-                      height: MediaQuery.of(context).size.height * 0.20,
+                      height: MediaQuery.of(context).size.height * 0.15,
                     ),
 
                     Padding(
@@ -106,20 +106,7 @@ class _CheckAnsScreen extends ConsumerState<CheckAnsScreen> {
                         textAlign: TextAlign.center,
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    // Padding(
-                    //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    //   child: Text(
-                    //     "correctness level: ${widget.answerData.rating} / 10",
-                    //     style: const TextStyle(
-                    //       color: Color(0xFF090438),
-                    //       fontSize: 20.0,
-                    //     ),
-                    //     textAlign: TextAlign.justify,
-                    //   ),
-                    // ),
-                    // const SizedBox(height: 20),
-
+                    const SizedBox(height: 10),
                     Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 9.0, vertical: 20.0),
                           child: Container(
@@ -153,6 +140,28 @@ class _CheckAnsScreen extends ConsumerState<CheckAnsScreen> {
                         ),
                       ),
                       ]),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      print("rating");
+                      print(widget.answerData.rating);
+                      Navigator.of(context).pop(widget.answerData.rating > 5);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(textBoxColors[widget.index]),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                    ),
+                    child: const Text(
+                      "Continue",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ]),

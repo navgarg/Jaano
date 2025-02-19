@@ -169,7 +169,7 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
 
     await Future.delayed(const Duration(milliseconds: 500));
     await flutterTts.speak("Published by ${article.source.name} "
-        "on ${DateFormat("d MMMM yyyy").format(DateTime.parse(article.publishedAt!))}");
+        "on ${DateFormat("d MMMM yyyy").format(DateTime.parse(article.publishedDate!))}");
 
     start = 0;
     end = 0;
@@ -214,7 +214,7 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
     _firestoreService.logUserAction("user.id", "article_completed", extraData: {
       "category": article.category.toString(),
       "title": article.title,
-      "articleId": article.id,
+      "articleId": article.articleId,
     });
     print("log - article completed");
     print("category");
@@ -347,9 +347,9 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(DateFormat("dd/MM/yyyy").format(DateTime.parse(
-                          widget.article.publishedAt ??
+                          widget.article.publishedDate ??
                               DateTime.now().toString()))),
-                      Text(widget.article.source.name),
+                      Text(widget.article.source.name?? ""),
                     ],
                   ),
                 ),
@@ -458,19 +458,19 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
                               ).createShader(bounds);
                             },
                             blendMode: BlendMode.srcATop,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.rectangle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    spreadRadius: 1.0, // Spread radius
-                                    color: Colors.black
-                                        .withOpacity(0.2), // Shadow color
-                                    blurRadius: 5.0, // Softness of shadow
-                                  ),
-                                ],
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
+                            // child: Container(
+                            //   decoration: BoxDecoration(
+                            //     shape: BoxShape.rectangle,
+                            //     boxShadow: [
+                            //       BoxShadow(
+                            //         spreadRadius: 1.0, // Spread radius
+                            //         color: Colors.black
+                            //             .withOpacity(0.2), // Shadow color
+                            //         blurRadius: 5.0, // Softness of shadow
+                            //       ),
+                            //     ],
+                            //     borderRadius: BorderRadius.circular(10.0),
+                            //   ),
                               child: IconButton(
                                 icon: Image.asset(
                                   quizIcons[widget.index],
@@ -488,7 +488,7 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
                                     ),
                                   );
                                 },
-                              ),
+                              // ),
                             ),
                           );
                         }),

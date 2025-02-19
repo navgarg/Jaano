@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -30,6 +31,8 @@ class QuizScreen extends ConsumerStatefulWidget {
 
 class _QuizScreen extends ConsumerState<QuizScreen>
     with TickerProviderStateMixin {
+  String? previousArticleId;
+  int _prevQuesIndex = -1;
   late AnimationController _controller;
   final FlutterTts flutterTts = FlutterTts();
   final Random random = Random();
@@ -60,6 +63,9 @@ class _QuizScreen extends ConsumerState<QuizScreen>
 
   void speakQues(String ques) async {
     if (!shouldSpeak) return;
+    setState(() {
+      isSpeaking = true;
+    });
     await flutterTts.speak(ques);
   }
 
@@ -104,7 +110,7 @@ class _QuizScreen extends ConsumerState<QuizScreen>
           if (mounted) showProcessingDialog(context, ref, widget.index);
         });
       } else if (next.value != null) {
-        Future.delayed(Duration.zero, () {
+        Future.delayed(Duration.zero, () async {
           if (mounted) {
             if (isProcessingDialogOpen) {
               // Ensure processing dialog is closed first
@@ -112,7 +118,7 @@ class _QuizScreen extends ConsumerState<QuizScreen>
               isProcessingDialogOpen = false; // Reset flag
             }
             // showAnswerDialog(context, next.value!.feedback, widget.index);
-            Navigator.of(context).push(
+            final bool iscorrect = await Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => CheckAnsScreen(
                   quesIndex: currQues - 1,
@@ -122,10 +128,25 @@ class _QuizScreen extends ConsumerState<QuizScreen>
                 ),
               ),
             );
+            // If user returns with a correct answer, go to next question
+            if (iscorrect) {
+              ref.read(questionIndexProvider.notifier).state == 1
+                  ? ref.read(questionIndexProvider.notifier).state++
+                  : Navigator.of(context).pop(); // Move to next question
+            }
           }
         });
       }
     });
+
+    if (previousArticleId != widget.article.articleId) {
+      setState(() {
+        Future.microtask(() {
+          ref.read(questionIndexProvider.notifier).state = 1;
+        }); // Reset index when switching to a new article
+      });
+      previousArticleId = widget.article.articleId;
+    }
 
     print("in build for quiz");
 
@@ -133,6 +154,14 @@ class _QuizScreen extends ConsumerState<QuizScreen>
       _controller.repeat(reverse: true);
     } else {
       _controller.reset();
+    }
+
+    // Reset words spoken if question index changes
+    if (currQues != _prevQuesIndex) {
+      _prevQuesIndex = currQues; // Update previous index
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(speechStateProvider.notifier).resetWordsSpoken();
+      });
     }
 
     return Scaffold(
@@ -189,25 +218,24 @@ class _QuizScreen extends ConsumerState<QuizScreen>
                             color: Colors.grey.withOpacity(0.5), // Shadow color
                             spreadRadius: 3, // How much the shadow spreads
                             blurRadius: 5, // Softness of the shadow
-                            offset: const Offset(-5, 5), // Moves shadow left (-X) and down (+Y)
+                            offset: const Offset(
+                                -5, 5), // Moves shadow left (-X) and down (+Y)
                           ),
                         ],
                       ),
-                      child:
-
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 16.0),
-                            child: Text(
-                              widget.article.questions?[currQues - 1].question
-                                      .toString() ??
-                                  " ",
-                              style: const TextStyle(
-                                color: Color(0xFF090438),
-                                fontSize: 20.0,
-                              ),
-                              textAlign: TextAlign.justify,
-                            ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 16.0),
+                        child: Text(
+                          widget.article.questions?[currQues - 1].question
+                                  .toString() ??
+                              " ",
+                          style: const TextStyle(
+                            color: Color(0xFF090438),
+                            fontSize: 20.0,
+                          ),
+                          textAlign: TextAlign.justify,
+                        ),
                       ),
                     ),
                   ),
@@ -228,14 +256,16 @@ class _QuizScreen extends ConsumerState<QuizScreen>
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
                           child: Text(
-                            speechState.wordsSpoken, //todo: check??
+                            speechState.wordsSpoken.isEmpty
+                                ? "Start speaking your answer..." // Show prompt when empty
+                                : speechState.wordsSpoken,
                             style: const TextStyle(
                               color: Color(0xFF090438),
                               fontSize: 18.0,
                               letterSpacing: 1.4,
                               fontStyle: FontStyle.italic,
                             ),
-                            textAlign: TextAlign.justify,
+                            textAlign: TextAlign.center,
                           ),
                         ),
                       ),
