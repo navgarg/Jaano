@@ -33,6 +33,7 @@ class HomeScreen extends ConsumerWidget {
     // final articleCompleted = ref.watch(articleCompletionProvider);
 
     /// Ensure articles are fetched when the widget is built
+    // occurs only once - after the first build.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       print('addPostFrameCallback: articlesState = $articlesState');
 

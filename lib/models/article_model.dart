@@ -165,7 +165,7 @@ class Article {
       source: source ?? this.source,
       title: title ?? this.title,
       description: description ?? this.description,
-      articleLink: articleId ?? this.articleLink,
+      articleLink: articleLink ?? this.articleLink,
       imageLink: imageLink ?? this.imageLink,
       publishedDate: publishedDate ?? this.publishedDate,
       content: content ?? this.content,

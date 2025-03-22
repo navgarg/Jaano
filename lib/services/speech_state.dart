@@ -32,10 +32,14 @@ class SpeechState {
   }
 }
 
-class SpeechStateNotifier extends StateNotifier<SpeechState> {
-  final Ref ref;
+class SpeechStateNotifier extends Notifier<SpeechState> {
+  // final Ref ref;
 
-  SpeechStateNotifier(this.ref) : super(SpeechState());
+
+  @override
+  SpeechState build() => SpeechState();
+
+  // SpeechStateNotifier(this.ref) : super(SpeechState());
 
   // Future<void> startProcessing() async {
   //   state = state.copyWith(isProcessing: true);
@@ -90,4 +94,5 @@ class SpeechStateNotifier extends StateNotifier<SpeechState> {
   void resetWordsSpoken() {
     state = state.copyWith(wordsSpoken: "");
   }
+
 }

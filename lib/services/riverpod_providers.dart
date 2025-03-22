@@ -9,10 +9,12 @@ import 'claude_api_service.dart';
 import 'speech_state.dart';
 
 final articlesProvider =
-StateNotifierProvider<ArticlesNotifier, AsyncValue<List<Article>>>((ref) => ArticlesNotifier());
+NotifierProvider<ArticlesNotifier, AsyncValue<List<Article>>>(ArticlesNotifier.new);
 
-class ArticlesNotifier extends StateNotifier<AsyncValue<List<Article>>> {
-  ArticlesNotifier() : super(const AsyncValue.loading());
+class ArticlesNotifier extends Notifier<AsyncValue<List<Article>>> {
+  @override
+  AsyncValue<List<Article>> build() => const AsyncValue.loading();
+  // ArticlesNotifier() : super(const AsyncValue.loading());
 
   // Fetch articles (example placeholder for actual fetch logic)
   Future<void> fetchArticles(Categories selectedCategory) async {
@@ -58,20 +60,22 @@ class ArticlesNotifier extends StateNotifier<AsyncValue<List<Article>>> {
             imageLink: article.imageLink,
             publishedDate: article.publishedDate,
             content: article.content,
+
             isCompleted: true, // Change only this field
           );
         }
         return article;
       }).toList();
-
       // Update state with modified articles list
       state = AsyncValue.data(updatedArticles);
     });
   }
 }
 
-class ExpandedPanelsNotifier extends StateNotifier<List<bool>> {
-  ExpandedPanelsNotifier() : super([]);
+class ExpandedPanelsNotifier extends Notifier<List<bool>> {
+  @override
+  List<bool> build() => [];
+  // ExpandedPanelsNotifier() : super([]);
 
   void initialize(int length) {
     if (length > 0) {
@@ -95,9 +99,7 @@ class ExpandedPanelsNotifier extends StateNotifier<List<bool>> {
 }
 
 final expandedPanelsProvider =
-StateNotifierProvider<ExpandedPanelsNotifier, List<bool>>(
-      (ref) => ExpandedPanelsNotifier(),
-);
+NotifierProvider<ExpandedPanelsNotifier, List<bool>>(ExpandedPanelsNotifier.new);
 
 
 final carouselIndexProvider = StateProvider<int>((ref) => 0);
@@ -117,9 +119,7 @@ final questionIndexProvider = StateProvider<int>((ref) => 1);
 
 final speechToTextProvider = Provider<SpeechToText>((ref) => SpeechToText());
 
-final speechStateProvider = StateNotifierProvider<SpeechStateNotifier, SpeechState>(
-      (ref) => SpeechStateNotifier(ref),
-);
+final speechStateProvider = NotifierProvider<SpeechStateNotifier, SpeechState>(SpeechStateNotifier.new);
 
 class PointsState {
   final int totalPoints;
@@ -147,8 +147,23 @@ class PointsState {
 
 class PointsNotifier extends StateNotifier<PointsState> {
   final FirestoreService _firestoreService = FirestoreService();
-  final String userId;
-  final PointType pointType;
+  late final PointType pointType;
+  late final String userId;
+
+  // PointsNotifier(String userId, PointType articlePoints);
+
+  // static PointsNotifier create(String userId, PointType pointType) {
+  //   final notifier = PointsNotifier();
+  //   notifier.userId = userId;
+  //   notifier.pointType = pointType;
+  //   return notifier;
+  // }
+  //
+  // @override
+  // PointsState build() {
+  //   _initialize();
+  //   return PointsState(totalPoints: 0);
+  // }
   PointsNotifier(this.userId, this.pointType) : super(PointsState(totalPoints: 0)) {
     _initialize();
   }
@@ -159,7 +174,7 @@ class PointsNotifier extends StateNotifier<PointsState> {
     state = state.copyWith(totalPoints: cachedPoints);
 
     // Listen to Firestore updates in real-time
-    _firestoreService.streamUserPoints(userId, pointType).listen((newPoints) {
+    _firestoreService.streamUserPoints(userId, pointType).listen((newPoints) { //todo: dispose firestore listener
       if (!state.isAnimating && newPoints != state.totalPoints) { // Avoid resetting points during animation
         state = state.copyWith(totalPoints: newPoints);
       }
@@ -180,12 +195,16 @@ class PointsNotifier extends StateNotifier<PointsState> {
   }
 }
 
+// final readingPointsProvider = NotifierProvider.family<PointsNotifier, PointsState, String>(
+//       (ref, userId) => PointsNotifier(userId, PointType.articlePoints),
+// );
 final readingPointsProvider = StateNotifierProvider.family<PointsNotifier, PointsState, String>(
-        (ref, userId) => PointsNotifier(userId, PointType.articlePoints),
+      (ref, userId) => PointsNotifier(userId, PointType.articlePoints),
 );
 
 final quizPointsProvider = StateNotifierProvider.family<PointsNotifier, PointsState, String>(
       (ref, userId) => PointsNotifier(userId, PointType.quizPoints),
+  // PointsNotifier.new,
 );
 
 class AnswerData {

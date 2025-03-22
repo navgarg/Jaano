@@ -35,7 +35,7 @@ class CustomListTile extends StatelessWidget {
             vertical: 8.0),
         child: Row(
           children: [
-            SizedBox(width: width * 0.005,),
+            SizedBox(width: width * 0.015,),
                 // Actual image
                 Image.network(
                   fit: BoxFit.cover,
@@ -55,7 +55,7 @@ class CustomListTile extends StatelessWidget {
                   },
             ),
             // Image.asset("assets/circuit.png", width: width * 0.25,),
-            // SizedBox(width: width * 0.025,),
+            SizedBox(width: width * 0.025,),
             Expanded(
                 child: Text(
                   article.title,
@@ -68,7 +68,7 @@ class CustomListTile extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 )
             ),
-            SizedBox(width: width * 0.025,),
+            SizedBox(width: width * 0.015,),
             article.isCompleted
                 ? const Icon(Icons.check_circle_outline)
                 : const Icon(Icons.navigate_next_rounded),
