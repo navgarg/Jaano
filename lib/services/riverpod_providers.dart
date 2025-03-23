@@ -8,6 +8,9 @@ import '../constants.dart';
 import 'claude_api_service.dart';
 import 'speech_state.dart';
 
+final completedArticleNo = StateProvider<Map<String, int>>((ref) => {});
+
+
 final articlesProvider =
 NotifierProvider<ArticlesNotifier, AsyncValue<List<Article>>>(ArticlesNotifier.new);
 
@@ -29,7 +32,16 @@ class ArticlesNotifier extends Notifier<AsyncValue<List<Article>>> {
         state = const AsyncLoading();
         return;
       }
-      final completedArticleIds = await client.getCompletedArticles("user.id"); //todo: update user id
+      final completedArticles = await client.getCompletedArticles("user.id"); //todo: update user id
+      final completedArticleIds = completedArticles["comp_arts"];
+      final comp_cats = completedArticles["comp_cats"];
+      Map<String, int> completedNo = {};
+      for (var cat in comp_cats){
+        completedNo[cat.toString()] = (completedNo[cat.toString()] ?? 0) + 1;
+      }
+      ref.read(completedArticleNo.notifier).state = completedNo;
+      print(ref.read(completedArticleNo.notifier).state);
+      print("Current state of completed articles: ${ref.watch(completedArticleNo)}");
       print("got completed articles");
       print(completedArticleIds);
       final updatedArticles = articles.map((article) {
@@ -202,10 +214,14 @@ final readingPointsProvider = StateNotifierProvider.family<PointsNotifier, Point
       (ref, userId) => PointsNotifier(userId, PointType.articlePoints),
 );
 
+final firebaseServiceProvider = Provider((ref) => FirestoreService());
+
 final quizPointsProvider = StateNotifierProvider.family<PointsNotifier, PointsState, String>(
       (ref, userId) => PointsNotifier(userId, PointType.quizPoints),
   // PointsNotifier.new,
 );
+
+
 
 class AnswerData {
   final String feedback;

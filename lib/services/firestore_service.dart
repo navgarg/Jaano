@@ -157,9 +157,10 @@ class FirestoreService {
         .set(logEntry);
   }
 
-  Future<List<String>> getCompletedArticles(String userId) async {
+  Future<Map<String, dynamic>> getCompletedArticles(String userId) async {
     String date = DateTime.now().toLocal().toString().split(' ')[0]; // YYYY-MM-DD
     List<String> completedArticles = [];
+    List<String> completedCategories = [];
 
     QuerySnapshot logSnapshots = await _db
         .collection('users')
@@ -172,9 +173,34 @@ class FirestoreService {
 
     for (var doc in logSnapshots.docs) {
       completedArticles.add((doc['extraData'] as Map<String, dynamic>?)?['articleId']); // Assuming articleId is stored in logs
+      completedCategories.add((doc['extraData'] as Map<String, dynamic>?)?['category']);
     }
 
-    return completedArticles;
+    return {"comp_arts": completedArticles, "comp_cats": completedCategories};
+  }
+
+  /// Fetch completed article IDs and group them by category
+  Future<Map<String, int>> getCompletedArticleCounts(String userId) async {
+    String date = DateTime.now().toLocal().toString().split(' ')[0]; // YYYY-MM-DD
+    Map<String, int> categoryCounts = {};
+
+    QuerySnapshot logSnapshots = await _db
+        .collection('users')
+        .doc(userId)
+        .collection('activity')
+        .doc(date)
+        .collection('events')
+        .where("action", isEqualTo: "article_completed")
+        .get();
+
+    for (var doc in logSnapshots.docs) {
+      String? category = (doc['extraData'] as Map<String, dynamic>?)?['category'];
+      if (category != null) {
+        categoryCounts[category] = (categoryCounts[category] ?? 0) + 1;
+      }
+    }
+
+    return categoryCounts;
   }
 
 }

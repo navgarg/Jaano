@@ -10,12 +10,15 @@ class Carousel extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
+    final completedArticles = ref.watch(completedArticleNo);
     final carouselIndex = ref.watch(carouselIndexProvider);
 
     String getCategoryIcon(int index, WidgetRef ref) {
-      final categoryManager = CategoryManager();
-      final completionStatus = categoryManager.completionStatus(categories[index]);
+      int completionStatus = completedArticles[categories[index].toString()] ?? 0;
+      print("category: ");
+      print(categories[index]);
+      print("status:");
+      print(completionStatus);
       if (completionStatus == 0) return catIcons0[index];
       if (completionStatus == 1) return catIcons1[index];
       if (completionStatus == 2) return catIcons2[index];
@@ -43,7 +46,7 @@ class Carousel extends ConsumerWidget {
         itemBuilder: (context, index) {
           final label = labels[index];
           final image = getCategoryIcon(index, ref);
-
+          print("got img for cat");
           return GestureDetector(
             onTap: () {
               ref

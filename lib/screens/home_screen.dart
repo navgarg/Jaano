@@ -25,6 +25,7 @@ class HomeScreen extends ConsumerWidget {
     // Watch providers
     final carouselIndex = ref.watch(carouselIndexProvider);
     // print("summary");
+
     // getClaudeQuestions("Apple is working on a new iPhone called the iPhone SE 4! It's going to be smaller than the regular iPhones, making it easier for little hands to hold. The exciting part is that it will have the same powerful chip as the more expensive iPhones, so you can play games and use apps just as smoothly. It might also have a better camera for taking sharper photos and videos. The body of the iPhone SE 4 could be made of tougher materials to prevent scratches and cracks if you accidentally drop it. Apple is aiming to launch this new iPhone by early next year, so you may get to see it soon!");
     // final articles = ref.watch(articlesProvider);
     final articlesNotifier = ref.read(articlesProvider.notifier);
@@ -80,19 +81,6 @@ class HomeScreen extends ConsumerWidget {
                       return const ShimmerPlaceholder();
                     }, // Use shimmer during loading
                     data: (articles) {
-                      // print('Fetched articles: ${articles.length}');
-                      // print('State refreshing: ${articlesState.isRefreshing}');
-                      // print('🟢 Data received: ${articles.length} articles');
-                      // print('State type: ${articlesState.runtimeType}');
-
-                      // Track whether we were in a loading state before receiving empty data
-                      // final wasLoadingBefore = ref.read(articlesProvider.notifier).wasLoadingBefore;
-                      //
-                      // if (articles.isEmpty && wasLoadingBefore) {
-                      //   print('⏳ Previously loading, keeping shimmer...');
-                      //   return const ShimmerPlaceholder();
-                      // }
-
                       if (articles.isEmpty) {
                         return const Center(
                             child: Text('No articles available.'));
@@ -134,47 +122,6 @@ class HomeScreen extends ConsumerWidget {
 
                             return Column(
                               children: [
-                                // Container(
-                                //   height:
-                                //   MediaQuery
-                                //       .of(context)
-                                //       .size
-                                //       .height * 0.18,
-                                //   alignment: Alignment.center,
-                                //   decoration: BoxDecoration(
-                                //     borderRadius: BorderRadius.circular(10.0),
-                                //     color: Color(bgColors[carouselIndex]),
-                                //   ),
-                                //   padding: const EdgeInsets.symmetric(
-                                //       vertical: 8.0, horizontal: 16.0),
-                                //   child: ListTile(
-                                //     leading: Image.asset('assets/circuit.png'),
-                                //     title: Text(
-                                //       article.title,
-                                //       style: const TextStyle(
-                                //         fontSize: 16.0,
-                                //         color: Colors.black,
-                                //         fontWeight: FontWeight.w500,
-                                //       ),
-                                //       maxLines: 4,
-                                //       overflow: TextOverflow.ellipsis,
-                                //     ),
-                                //     trailing: article.isCompleted
-                                //         ? const Icon(Icons.check_circle_outline)
-                                //         : const Icon(Icons.navigate_next_rounded),
-                                //     onTap: () {
-                                //       Navigator.push(
-                                //           context,
-                                //           MaterialPageRoute(
-                                //               builder: (context) =>
-                                //                   ExpandedArticleScreen(
-                                //                     article: article,
-                                //                     articlesNotifier: articlesNotifier,
-                                //                     index: carouselIndex,
-                                //                   )));
-                                //     },
-                                //   ),
-                                // ),
                                 CustomListTile(
                                     article: article,
                                     carouselIndex: carouselIndex,

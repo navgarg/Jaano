@@ -65,23 +65,23 @@ class Question{
 enum Categories {business, technology, sports, science, health, environment, other;
 }
 
-class CategoryManager {
-  final Map<Categories, int> _completionStatus = {
-    for (var category in Categories.values) category: 0,
-  };
-
-  void addCompletedArticle(Categories category) {
-    _completionStatus[category] = _completionStatus[category] != null ? _completionStatus[category]! + 1 : 1;
-  }
-
-  int? completionStatus(Categories category) {
-    return _completionStatus[category];
-  }
-
-  void resetCompletion(Categories category) {
-    _completionStatus[category] = 0;
-  }
-}
+// class CategoryManager {
+//   final Map<Categories, int> _completionStatus = {
+//     for (var category in Categories.values) category: 0,
+//   };
+//
+//   void addCompletedArticle(Categories category) {
+//     _completionStatus[category] = _completionStatus[category] != null ? _completionStatus[category]! + 1 : 1;
+//   }
+//
+//   int? completionStatus(Categories category) {
+//     return _completionStatus[category];
+//   }
+//
+//   void resetCompletion(Categories category) {
+//     _completionStatus[category] = 0;
+//   }
+// }
 
 class Article {
   List<Question>? questions;

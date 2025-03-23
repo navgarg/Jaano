@@ -114,7 +114,7 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
   }
 
   void promptQuiz() {
-    var categoryManager = CategoryManager();
+    // var categoryManager = CategoryManager();
     if (!shouldSpeak) return;
     setState(() {
       currentSection = SpeakingSection.quizPrompt;
@@ -128,6 +128,7 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
     });
 
     flutterTts.setCompletionHandler(() {
+
       if (!shouldSpeak) return;
       setState(() {
         isSpeaking = false;
@@ -135,8 +136,13 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
         print("Article completed");
         print(widget.article.isCompleted);
         print(widget.article.title);
-        categoryManager.addCompletedArticle(widget.article.category);
+        // categoryManager.addCompletedArticle(widget.article.category);
         widget.articlesNotifier.completeArticle(widget.article);
+        ref.read(completedArticleNo.notifier).update((state) {
+          final newState = Map<String, int>.from(state); // Create a new copy of the map
+          newState[widget.article.category.name] = (newState[widget.article.category.name] ?? 0) + 1; // Increment the value
+          return newState; // Return the updated state
+        });
       });
     });
   }
@@ -288,7 +294,7 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
                                     : "",
                                 style: const TextStyle(
                                   color: Color(0xFF090438),
-                                  fontSize: 27,
+                                  fontSize: 25,
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 1.4,
                                   height: 1.2,
@@ -299,7 +305,7 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
                                     widget.article.title.substring(start, end),
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 24,
+                                  fontSize: 25,
                                   letterSpacing: 1.4,
                                   fontWeight: FontWeight.w900,
                                   height: 1.2,
@@ -311,7 +317,7 @@ class _ExpandedArticleScreenState extends ConsumerState<ExpandedArticleScreen>
                               TextSpan(
                                 text: widget.article.title.substring(end),
                                 style: const TextStyle(
-                                  fontSize: 24,
+                                  fontSize: 25,
                                   fontWeight: FontWeight.bold,
                                   color: Color(0xFF090438),
                                   height: 1.2,
